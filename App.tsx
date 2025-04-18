@@ -46,7 +46,6 @@ export default function App() {
       setHasFirstName(true)
     }
 
-    console.log('hello')
 
   }
 
