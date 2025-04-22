@@ -8,10 +8,12 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Main  from './components/Main'
 import Profile from './components/screens/Profile'
+import SignUp from './components/SignUp'
+import SignIn from './components/SignIn'
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null)
-  const [hasFirstName, setHasFirstName] = useState<boolean>(false)
+  // const [hasFirstName, setHasFirstName] = useState<boolean>(false)
 
 
   const Stack = createNativeStackNavigator();
@@ -30,64 +32,73 @@ export default function App() {
 
   }, [])
 
-  async function checkName() {
-    let { data, error, status } = await supabase
-        .from('Profiles')
-        .select()
-        .eq('id', session?.user.id)
-        .single()
-      if (error && status !== 406) { //  
-        throw error
-      }
+  // async function checkName() {
+  //   let { data, error, status } = await supabase
+  //       .from('Profiles')
+  //       .select()
+  //       .eq('id', session?.user.id)
+  //       .single()
+  //     if (error && status !== 406) { //  
+  //       throw error
+  //     }
     
-    if (data.FirstName) {
-      console.log("SHould be name")
-      console.log(data.FirstName)
-      setHasFirstName(true)
-    }
+  //   if (data.FirstName) {
+  //     console.log("SHould be name")
+  //     console.log(data.FirstName)
+  //     setHasFirstName(true)
+  //   }
 
 
-  }
+  // }
 
-  const renderInitialScreen = () => {
-    checkName()
-    if (!session || !session.user) {
-      return <Stack.Screen name="Auth" component={Auth} />;
-    }
+  // const renderInitialScreen = () => {
+  //   checkName()
+  //   if (!session || !session.user) {
+  //     return <Stack.Screen name="Auth" component={Auth} />;
+  //   }
 
-    if (!hasFirstName) {
-      return (
-        <>
-        <Stack.Screen name="Account">
-          {(props) => <Account {...props} session={session} />}
-        </Stack.Screen>
-        <Stack.Screen name="Profile" component={Profile} />
-        </>
-      );
-    }
+  //   if (!hasFirstName) {
+  //     return (
+  //       <>
+  //       {/* <Stack.Screen name="Account">
+  //         {(props) => <Account {...props} session={session} />}
+  //       </Stack.Screen> */}
+  //       <Stack.Screen name="Profile" component={Profile} />
+  //       </>
+  //     );
+  //   }
 
-    return (
-      <Stack.Screen name="Profile" component={Profile} />
-      // <Stack.Screen name="Account">
-      //     {(props) => <Account {...props} session={session} />}
-      //   </Stack.Screen>
-    );
-  }
+  //   return (
+  //     <>
+        
+  //     </>
+      
+  //     // <Stack.Screen name="Account">
+  //     //     {(props) => <Account {...props} session={session} />}
+  //     //   </Stack.Screen>
+  //   );
+  // }
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {renderInitialScreen()}
-        {/* {session && session.user ? (
+      <Stack.Navigator screenOptions={{ headerShown: true }}>
+        {/* {renderInitialScreen()} */}
+        {session && session.user ? (
           <>
-            <Stack.Screen name="Account">
+            {/* <Stack.Screen name="Account">
               {(props) => <Account {...props} session={session} />}
-            </Stack.Screen>
+            </Stack.Screen> */}
             <Stack.Screen name="Profile" component={Profile} />
           </>
         ) : (
-          <Stack.Screen name="Auth" component={Auth} />
-        )} */}
+          // <Stack.Screen name="Auth" component={Auth} />
+          <>
+            <Stack.Screen name="SignIn" component={SignIn} />
+            <Stack.Screen name="SignUp">
+              {(props) => <SignUp {...props} session={session} />}
+            </Stack.Screen>
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   )

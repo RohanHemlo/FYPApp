@@ -3,8 +3,9 @@ import { Alert, StyleSheet, View } from 'react-native'
 import { supabase } from '../lib/supabase'
 import { Button, Input } from '@rneui/themed'
 import { useNavigation } from "@react-navigation/native";
+import SignUp from './SignUp';
 
-export default function Auth() {
+export default function SignIn() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -25,20 +26,20 @@ export default function Auth() {
     setLoading(false)
   }
 
-  async function signUpWithEmail() {
-    setLoading(true)
-    const { error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    })
+//   async function signUpWithEmail() {
+//     setLoading(true)
+//     const { error } = await supabase.auth.signUp({
+//       email: email,
+//       password: password,
+//     })
 
-    // if (error) Alert.alert(error.message)
-    if (error) console.log(error)
+//     // if (error) Alert.alert(error.message)
+//     if (error) console.log(error)
 
-    setLoading(false)
+//     setLoading(false)
 
-    // navigation.navigate("Accounts")
-  }
+//     // navigation.navigate("Accounts")
+//   }
 
   return (
     <View>
@@ -67,7 +68,7 @@ export default function Auth() {
         <Button title="Sign in" disabled={loading} onPress={() => signInWithEmail()} />
       </View>
       <View style={styles.verticallySpaced}>
-        <Button title="Sign up" disabled={loading} onPress={() => signUpWithEmail()} />
+        <Button title="Sign up" disabled={loading} onPress={() => navigation.navigate("SignUp")} />
       </View>
     </View>
   )
