@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react'
 import { StyleSheet, ScrollView, View, Switch, Alert } from 'react-native'
 import { supabase } from '../lib/supabase'
-import { Session } from '@supabase/supabase-js'
 import { Button, Input, Text } from '@rneui/themed'
 import { useNavigation } from "@react-navigation/native";
 import { Picker } from '@react-native-picker/picker'
 
-export default function SignUp({ session }: { session: Session | null }) {
+export default function SignUp() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
@@ -21,24 +20,43 @@ export default function SignUp({ session }: { session: Session | null }) {
 
     async function signUpWithEmail() {
         setLoading(true)
-        const { data, error } = await supabase.auth.signUp({
-            email: email,
-            password: password,
-        })
 
-        // if (error) Alert.alert(error.message)
-        if (data) console.log(data)
-        if (error) console.log(error)
+        console.log(FirstName, "")
+        if (email === "" || email === null) {
+            alert("Email is Empty!!")
+            setLoading(false)
+        }
+        else if (password === "" || password === null) {
+            alert("Password is Empty!!")
+            setLoading(false)
+        }
+        else if (FirstName === "" || FirstName === null) {
+            alert("First Name is Empty!!")
+            setLoading(false)
+        }
+        else if (SecondName === "" || SecondName === null) {
+            alert("Second Name is Empty!!")
+            setLoading(false)
+        }
+        else {
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+            })
 
-        try {
-            setLoading(true)
-            if (!data?.user) throw new Error('No user on the session!')
+            // if (error) Alert.alert(error.message)
+            if (data) console.log(data)
+            if (error) console.log(error)
 
-            console.log(FirstName, "")
-            if (FirstName === "" || SecondName === "" || FirstName === null || SecondName === null) {
-                alert("First Name or Second Name is Empty!!")
+            try {
+                setLoading(true)
+                if (!data?.user) throw new Error('No user on the session!')
 
-            } else {
+                console.log(FirstName, "")
+                if (FirstName === "" || SecondName === "" || FirstName === null || SecondName === null) {
+                    alert("First Name or Second Name is Empty!!")
+
+                }
 
                 const updates = {
                     id: data?.user.id,
@@ -61,78 +79,18 @@ export default function SignUp({ session }: { session: Session | null }) {
 
                 // navigation.navigate("Profile")
 
-            }
-        } catch (error) {
-            if (error instanceof Error) {
-                Alert.alert(error.message)
-            }
-        } finally {
-            setLoading(false)
-        }
 
-        setLoading(false)
-
-        // navigation.navigate("Accounts")
-    }
-
-    async function updateProfile({
-        FirstName,
-        SecondName,
-        Gender,
-        Private,
-        FavouritePosition,
-        FavouriteClub,
-        Level,
-    }: {
-        FirstName: string
-        SecondName: string
-        Gender: string
-        Private: boolean
-        FavouritePosition: string
-        FavouriteClub: string
-        Level: number
-    }) {
-        try {
-            setLoading(true)
-            if (!session?.user) throw new Error('No user on the session!')
-
-            console.log(FirstName, "")
-            if (FirstName === "" || SecondName === "" || FirstName === null || SecondName === null) {
-                alert("First Name or Second Name is Empty!!")
-
-            } else {
-
-                const updates = {
-                    id: session?.user.id,
-                    FirstName,
-                    SecondName,
-                    Gender,
-                    Private,
-                    FavouritePosition,
-                    FavouriteClub,
-                    Level,
+            } catch (error) {
+                if (error instanceof Error) {
+                    Alert.alert(error.message)
                 }
-
-                let { data, error } = await supabase.from('Profiles').upsert(updates).select()
-
-                console.log(error)
-
-                if (error) {
-                    throw error
-                }
-
-                // navigation.navigate("Profile")
-
+            } finally {
+                setLoading(false)
             }
-        } catch (error) {
-            if (error instanceof Error) {
-                Alert.alert(error.message)
-            }
-        } finally {
+
             setLoading(false)
         }
     }
-
 
     return (
         <ScrollView>

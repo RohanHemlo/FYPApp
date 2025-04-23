@@ -9,8 +9,6 @@ export default function Auth() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // TODO: SEPARETE OUT LOG IN AND SIGN UP PAGE
-
   const navigation = useNavigation();
 
   async function signInWithEmail() {

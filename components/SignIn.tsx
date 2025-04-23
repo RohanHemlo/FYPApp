@@ -2,17 +2,23 @@ import React, { useState } from 'react'
 import { Alert, StyleSheet, View } from 'react-native'
 import { supabase } from '../lib/supabase'
 import { Button, Input } from '@rneui/themed'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useNavigation } from "@react-navigation/native";
-import SignUp from './SignUp';
+import { MMKV, useMMKV } from 'react-native-mmkv'
 
 export default function SignIn() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // TODO: SEPARETE OUT LOG IN AND SIGN UP PAGE
+  // const storage = useMMKV()
+  // console.log(storage.getString('user.name'))
 
-  const navigation = useNavigation();
+  //TODO: try make it so that the email and password carry over if needed from sign in page to sign up
+  // https://stackoverflow.com/questions/68667766/react-native-typescript-string-is-not-assignable-to-parameter-of-type-never
+  // ^^ FOR HELP ^^
+
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
   async function signInWithEmail() {
     setLoading(true)
@@ -25,21 +31,6 @@ export default function SignIn() {
     if (error) Alert.alert(error.message)
     setLoading(false)
   }
-
-//   async function signUpWithEmail() {
-//     setLoading(true)
-//     const { error } = await supabase.auth.signUp({
-//       email: email,
-//       password: password,
-//     })
-
-//     // if (error) Alert.alert(error.message)
-//     if (error) console.log(error)
-
-//     setLoading(false)
-
-//     // navigation.navigate("Accounts")
-//   }
 
   return (
     <View>

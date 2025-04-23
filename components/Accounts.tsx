@@ -103,7 +103,7 @@ export default function Account({ session }: { session: Session }) {
           throw error
         }
 
-        navigation.navigate("Profile")
+        // navigation.navigate("Profile")
 
       }
     } catch (error) {
