@@ -165,6 +165,8 @@ export default function SignUp() {
             <View style={[styles.verticallySpaced, styles.mt20]}>
                 <Button
                     title={loading ? 'Loading ...' : 'Update'}
+                    color={'rgb(245, 148, 92)'}
+                    titleStyle={{color: 'black'}}
                     onPress={() => { signUpWithEmail() }}
                     disabled={loading}
                 />

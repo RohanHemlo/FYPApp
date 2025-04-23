@@ -21,8 +21,6 @@ const Profile = () => {
           <Text>Rank</Text>
         </TouchableOpacity>
 
-        <Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
-
       </View>
     </ScrollView>
   )
@@ -35,7 +33,7 @@ const styles = StyleSheet.create({
     width: '47%', // about 2 per row with spacing
     height: '47%',
     aspectRatio: 1, // 👈 keeps it square
-    backgroundColor: 'rgb(66, 133, 244)',
+    backgroundColor: 'rgb(245, 148, 92)',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,

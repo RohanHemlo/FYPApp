@@ -56,10 +56,14 @@ export default function SignIn() {
         />
       </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button title="Sign in" disabled={loading} onPress={() => signInWithEmail()} />
+        <Button title="Sign in" disabled={loading}
+        color={'rgb(245, 148, 92)'} titleStyle={{color: 'black'}}
+        onPress={() => signInWithEmail()} />
       </View>
       <View style={styles.verticallySpaced}>
-        <Button title="Sign up" disabled={loading} onPress={() => navigation.navigate("SignUp")} />
+        <Button title="Sign up" disabled={loading} 
+        color={'rgb(245, 148, 92)'} titleStyle={{color: 'black'}}
+        onPress={() => navigation.navigate("SignUp")} />
       </View>
     </View>
   )

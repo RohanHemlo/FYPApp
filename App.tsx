@@ -19,10 +19,8 @@ export default function App() {
   const [session, setSession] = useState<Session | null>(null)
 
   const Stack = createNativeStackNavigator(); 
-  storage.set('user.name', 'Marc')
 
-
-  // TODO: CHECK HOW TO USE ASYNC STORAGE AND GET THE TAB BAR DONE
+  // TODO: MAKE A NAVIGATION APGE FOR SIGN IN AND SIGN UP
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
