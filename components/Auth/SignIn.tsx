@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Alert, StyleSheet, View } from 'react-native'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import { Button, Input } from '@rneui/themed'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useNavigation } from "@react-navigation/native";

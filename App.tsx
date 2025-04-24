@@ -8,11 +8,11 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 ////// npx expo run:android TO BUILD AND RUN APP ///////
 
 //ALL NORMAL SCREENS
-import TabContainer from './components/Navigation/TabContainer'
+import TabContainer from './components/Navigation/BottomTabContainer'
 
 //AUTH SCREENS
-import SignIn from './components/SignIn'
-import SignUp from './components/SignUp'
+import SignIn from './components/Auth/SignIn'
+import SignUp from './components/Auth/SignUp'
 
 export const storage = new MMKV()
 

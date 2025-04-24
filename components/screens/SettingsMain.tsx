@@ -18,7 +18,7 @@ export default function SettingsMain() {
       containerStyle={{
         marginVertical: 10,
       }}
-      onPress={() => navigation.navigate("Account")} />
+      onPress={() => navigation.navigate("Edit Profile")} />
 
       <Button title="Sign Out" color={'rgb(245, 148, 92)'} titleStyle={{ color: 'black' }} 
       containerStyle={{

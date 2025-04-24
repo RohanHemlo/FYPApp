@@ -1,8 +1,9 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import { useMMKV } from 'react-native-mmkv'
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 
-const GameJoin = () => {
+export default function MatchScreen () {
 
   const storage = useMMKV();
 
@@ -17,5 +18,3 @@ const GameJoin = () => {
     </View>
   )
 }
-
-export default GameJoin

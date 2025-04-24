@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import { StyleSheet, ScrollView, View, Switch, Alert } from 'react-native'
 import { Button, Input, Text } from '@rneui/themed'
 import { Session } from '@supabase/supabase-js'
@@ -7,7 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Picker } from '@react-native-picker/picker'
 
-export default function Account({ session }: { session: Session }) {
+export default function EditProfile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true)
   const [FirstName, setFirstName] = useState('')
   const [SecondName, setSecondName] = useState('')

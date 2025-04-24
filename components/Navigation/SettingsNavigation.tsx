@@ -6,12 +6,12 @@ import { supabase } from '../../lib/supabase'
 import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import SettingsMain from './SettingsMain';
-import Account from '../Accounts';
+import SettingsMain from '../screens/SettingsMain';
+import EditProfile from '../screens/EditProfile';
 
 const Stack = createNativeStackNavigator();
 
-export default function Settings() {
+export default function SettingsNavigation() {
 
   const storage = useMMKV()
 
@@ -21,8 +21,8 @@ export default function Settings() {
   return (
       <Stack.Navigator>
         <Stack.Screen name="Main Settings" component={SettingsMain} options={{ headerShown: false}}/>
-        <Stack.Screen name="Account">
-           {(props) => <Account {...props} session={session} />}
+        <Stack.Screen name="Edit Profile">
+           {(props) => <EditProfile {...props} session={session} />}
          </Stack.Screen>
       </Stack.Navigator>
   )

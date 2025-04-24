@@ -4,13 +4,13 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 // SCREENS
 
 import Profile from '../screens/Profile'
-import Settings from '../screens/Settings'
-import GameJoin from '../screens/GameJoin'
+import SettingsNavigation from './SettingsNavigation'
+import MatchScreen from '../screens/MatchScreen'
 import Leaderboard from '../screens/Leaderboard'
 
-const Tab = createBottomTabNavigator()
-
 export default function TabContainer() {
+    const Tab = createBottomTabNavigator()
+
     return (
         <Tab.Navigator
             initialRouteName={"Profile"}
@@ -32,7 +32,6 @@ export default function TabContainer() {
                         iconName = focused ? 'football' : 'football-outline';
                     }
 
-                    // You can return any component that you like here!
                     return <Ionicons name={iconName} size={size} color={color} />;
                 },
                 tabBarActiveTintColor: '#f5945c',
@@ -44,8 +43,8 @@ export default function TabContainer() {
 
             <Tab.Screen name={"Profile"} component={Profile} />
             <Tab.Screen name={"Leaderboard"} component={Leaderboard} />
-            <Tab.Screen name={"Play!"} component={GameJoin} />
-            <Tab.Screen name={"Settings"} component={Settings} />
+            <Tab.Screen name={"Play!"} component={MatchScreen} />
+            <Tab.Screen name={"Settings"} component={SettingsNavigation} />
             
         </Tab.Navigator>
     )

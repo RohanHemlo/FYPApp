@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { StyleSheet, ScrollView, View, Switch, Alert } from 'react-native'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import { Button, Input, Text } from '@rneui/themed'
 import { useNavigation } from "@react-navigation/native";
 import { Picker } from '@react-native-picker/picker'
