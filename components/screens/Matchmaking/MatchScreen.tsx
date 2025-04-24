@@ -1,7 +1,6 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import { useMMKV } from 'react-native-mmkv'
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 
 export default function MatchScreen () {
 
