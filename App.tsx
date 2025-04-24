@@ -1,26 +1,25 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './lib/supabase'
 import { MMKV, useMMKV } from 'react-native-mmkv'
-import Auth from './components/Auth'
-import Account from './components/Accounts'
-import { View, ActivityIndicator } from 'react-native'
 import { Session } from '@supabase/supabase-js'
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Main from './components/Main'
-import Profile from './components/screens/Profile'
-import SignUp from './components/SignUp'
-import SignIn from './components/SignIn'
+
+////// npx expo run:android TO BUILD AND RUN APP ///////
+
+//ALL NORMAL SCREENS
 import TabContainer from './components/Navigation/TabContainer'
+
+//AUTH SCREENS
+import SignIn from './components/SignIn'
+import SignUp from './components/SignUp'
 
 export const storage = new MMKV()
 
+const Stack = createNativeStackNavigator();
+
 export default function App() {
   const [session, setSession] = useState<Session | null>(null)
-
-  const Stack = createNativeStackNavigator(); 
-
-  // TODO: MAKE A NAVIGATION APGE FOR SIGN IN AND SIGN UP
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -32,10 +31,6 @@ export default function App() {
       setSession(session)
       storage.set('session', JSON.stringify(session))
     })
-
-    // if (session != null) {
-    //   storage.set('session', JSON.stringify(session))
-    // }
 
   }, [])
 
@@ -71,27 +66,24 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      {/* <Stack.Navigator screenOptions={{ headerShown: true }}> */}
-      {/* {renderInitialScreen()} */}
-      {/* <Stack.Screen name="Account">
-              {(props) => <Account {...props} session={session} />}
-            </Stack.Screen> */}
+
       {session && session.user ? (
-        <TabContainer/>
+        <TabContainer />
       ) : (
-        // <>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="SignIn" component={SignIn} />
-          <Stack.Screen name="SignUp" component={SignUp} />
+        <Stack.Navigator screenOptions={{ headerShown: true }}>
+          <Stack.Screen name="Sign In" component={SignIn} />
+          <Stack.Screen name="Sign Up" component={SignUp} />
         </Stack.Navigator>
       )
       }
-      {/* </Stack.Navigator> */}
+
     </NavigationContainer >
   )
 }
 
 // <View>
+
+{/* </Stack.Navigator> */ }
 
 {/* {session && session.user ? <Account key={session.user.id} session={session} /> : <Auth />} */ }
 {/* <Main></Main> */ }

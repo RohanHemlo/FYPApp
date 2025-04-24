@@ -3,23 +3,36 @@ import { Button } from '@rneui/themed';
 import { Session } from '@supabase/supabase-js'
 import { MMKV, useMMKV} from 'react-native-mmkv'
 import { supabase } from '../../lib/supabase'
-import React from 'react'
+import { NavigationContainer } from "@react-navigation/native"
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-const Settings = () => {
+import SettingsMain from './SettingsMain';
+import Account from '../Accounts';
+
+const Stack = createNativeStackNavigator();
+
+export default function Settings() {
+
+  const storage = useMMKV()
+
+  let session_string:string = storage.getString('session')!
+  const session = JSON.parse(session_string)
+
   return (
-    <View>
-      <Button title="Sign Out" color={'rgb(245, 148, 92)'} titleStyle={{color: 'black'}} onPress={() => supabase.auth.signOut()} />
-    </View>
+      <Stack.Navigator>
+        <Stack.Screen name="Main Settings" component={SettingsMain} options={{ headerShown: false}}/>
+        <Stack.Screen name="Account">
+           {(props) => <Account {...props} session={session} />}
+         </Stack.Screen>
+      </Stack.Navigator>
   )
 }
-
-export default Settings
 
 const styles = StyleSheet.create({
   button: {
     width: '47%', // about 2 per row with spacing
     height: '47%',
-    aspectRatio: 1, // 👈 keeps it square
+    aspectRatio: 1, // <- keeps it square
     backgroundColor: 'rgb(245, 148, 92)',
     justifyContent: 'center',
     alignItems: 'center',

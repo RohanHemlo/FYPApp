@@ -6,7 +6,6 @@ import { Session } from '@supabase/supabase-js'
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Picker } from '@react-native-picker/picker'
-// import Avatar from './Avatar'
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true)
@@ -18,7 +17,8 @@ export default function Account({ session }: { session: Session }) {
   const [FavouriteClub, setFavouriteClub] = useState('')
   const [Level, setLevel] = useState<number>(1)
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+
   console.log(session)
 
   useEffect(() => {
@@ -170,14 +170,12 @@ export default function Account({ session }: { session: Session }) {
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
           title={loading ? 'Loading ...' : 'Update'}
-          onPress={() => updateProfile({ FirstName, SecondName, Gender, Private, FavouritePosition, FavouriteClub, Level })}
+          color={'rgb(245, 148, 92)'} titleStyle={{color: 'black'}}
+          onPress={() => {updateProfile({ FirstName, SecondName, Gender, Private, FavouritePosition, FavouriteClub, Level }), navigation.navigate("Main Settings")}}
           disabled={loading}
         />
       </View>
 
-      <View style={styles.verticallySpaced}>
-        <Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
-      </View>
     </ScrollView>
   )
 }

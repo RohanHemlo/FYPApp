@@ -63,7 +63,7 @@ export default function SignIn() {
       <View style={styles.verticallySpaced}>
         <Button title="Sign up" disabled={loading} 
         color={'rgb(245, 148, 92)'} titleStyle={{color: 'black'}}
-        onPress={() => navigation.navigate("SignUp")} />
+        onPress={() => navigation.navigate("Sign Up")} />
       </View>
     </View>
   )
