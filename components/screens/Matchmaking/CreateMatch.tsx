@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabase'
-import { StyleSheet, ScrollView, View, Switch, Alert } from 'react-native'
+import { StyleSheet, ScrollView, View, Switch, Alert, Linking, Platform } from 'react-native'
 import { Button, Input, Text } from '@rneui/themed'
 import { Session } from '@supabase/supabase-js'
 import { useNavigation } from "@react-navigation/native";
@@ -10,12 +10,15 @@ import { useMMKV } from 'react-native-mmkv'
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
 import DatePicker from 'react-native-date-picker'
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler'
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 
-// TODO: ADD ADDRESS TO THE INFORMATION ADDED, TRY FIND A MODULE FOR IT
-// TODO: REDO THE TRIGGER AND FUNCTIONS IN SQL TO MAKE SURE THAT IF IT'S BEEN LESS THAN 24 HOURS UPCOMING GETS SET TO FALSE
+// TODO: ADD ADDRESS TO THE INFORMATION ADDED, TRY FIND A MODULE FOR IT 
+// TODO: ADD ADDRESS HANDLES IN DATABASE, FIGURE OUT HOW TO WORK IT WITH THE MAPS FIRST
 // TODO: MAKE SURE THE DATE IS MORE THAN 24 HOURS THAN NOW TO ADD IT TO THE DATABASE
 // TODO: CHANGE THE DATABASE SO THAT USERS CAN ONLY MAKE ONE MATCH PER WEEK
 // TODO: BETTER STYLING FOR EVERYTHING IN THIS PAGE
+// TODO: CHECK THE TRIGGER AND FUNCTIONS IN SQL TO MAKE SURE THAT IF IT'S BEEN LESS THAN 24 HOURS UPCOMING GETS SET TO FALSE
+
 
 export default function CreateMatch() {
     const [loading, setLoading] = useState(false)
@@ -27,6 +30,10 @@ export default function CreateMatch() {
     const [date, setDate] = useState(new Date())
     const [open, setOpen] = useState(false)
 
+    // THIS IS FOR ADDRESS
+    const [address, setAddress] = useState<any | null>(null)
+    const [addressDetails, setDetails] = useState<any | null>(null)
+
     const storage = useMMKV()
 
     const navigation = useNavigation<NativeStackNavigationProp<any>>()
@@ -36,7 +43,7 @@ export default function CreateMatch() {
     const user_id = session?.user?.identities?.[0]?.id
 
     async function insertNewMatch() {
-        console.log(TotalPlayers, date, Gender, info)
+        console.log(TotalPlayers, date, Gender, info, '\naddress:\n', address)
 
         try {
             setLoading(true)
@@ -64,16 +71,28 @@ export default function CreateMatch() {
         } catch (error) {
             if (error instanceof Error) {
                 Alert.alert(error.message)
-              }
+            }
         } finally {
             setLoading(false)
         }
     }
 
+    function checkMaps() {
+        var address_name = address?.description
+
+        const scheme = Platform.select({
+            ios: `maps://?q=${address_name}`,
+            android: `geo:0,0?q=${address_name}`,
+        })
+
+        if (scheme) {
+            Linking.openURL(scheme)
+        }
+    }
 
     return (
         <GestureHandlerRootView>
-            <ScrollView style={styles.container}>
+            <ScrollView keyboardShouldPersistTaps={'handled'} style={styles.container}>
                 <View style={[styles.verticallySpaced, styles.mt20]}>
                     <Button
                         title="Choose Date and Time"
@@ -111,6 +130,25 @@ export default function CreateMatch() {
                     </Picker>
                 </View>
                 <View style={[styles.verticallySpaced, styles.mt20]}>
+                    <Text>Address</Text>
+                    <GooglePlacesAutocomplete
+                        query={{
+                            key: 'AIzaSyBcDag6e2TMRmh8Wc0vktBW7ZvH4NC-zMg',
+                            language: 'en', // language of the results
+                            components: 'country:uk'
+                        }}
+                        onPress={(data, details) => { setAddress(data), setDetails(details) }}
+                        textInputProps={{
+                            InputComp: Input,
+                            // leftIcon: { type: 'font-awesome', name: 'chevron-left' },
+                            errorStyle: { color: 'red' },
+                        }} placeholder={'Type The Address here and then select one.'} />
+                </View>
+                <View>
+                    <Button title='check maps' onPress={() => checkMaps()} />
+                </View>
+                <View style={[styles.verticallySpaced, styles.mt20]}>
+                    <Text>Additional Information</Text>
                     <SafeAreaProvider>
                         <SafeAreaView>
                             <TextInput
@@ -118,6 +156,7 @@ export default function CreateMatch() {
                                 multiline
                                 numberOfLines={4}
                                 maxLength={40}
+                                selectionColor={'grey'}
                                 placeholder="Write any aditional information here! For example, what type of boots to bring, any costs"
                                 onChangeText={text => setInfo(text)}
                                 value={info}
@@ -156,5 +195,7 @@ const styles = StyleSheet.create({
     },
     textInput: {
         padding: 10,
+        borderColor: 'gray',
+        borderWidth: 1,
     },
 });
