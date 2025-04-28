@@ -5,9 +5,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import Profile from '../screens/Profile'
 import SettingsNavigation from './SettingsNavigation'
-// import MatchScreen from '../screens/Matchmaking/MatchScreen'
 import MatchTopBarContainer from './MatchTopBarContainer'
 import Leaderboard from '../screens/Leaderboard'
+import UpComingMatch from '../screens/UpComingMatch'
 
 export default function TabContainer() {
     const Tab = createBottomTabNavigator()
@@ -32,6 +32,9 @@ export default function TabContainer() {
                     } else if (rn === "Play!") {
                         iconName = focused ? 'football' : 'football-outline';
                     }
+                    else if (rn === "Upcoming") {
+                        iconName = focused ? 'calendar' : 'calendar-outline';
+                    }
 
                     return <Ionicons name={iconName} size={size} color={color} />;
                 },
@@ -45,6 +48,7 @@ export default function TabContainer() {
             <Tab.Screen name={"Profile"} component={Profile} />
             <Tab.Screen name={"Leaderboard"} component={Leaderboard} />
             <Tab.Screen name={"Play!"} component={MatchTopBarContainer} />
+            <Tab.Screen name={"Upcoming"} component={UpComingMatch} />
             <Tab.Screen name={"Settings"} component={SettingsNavigation} />
             
         </Tab.Navigator>

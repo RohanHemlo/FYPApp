@@ -56,7 +56,7 @@ export default function CreateMatch() {
                 UpComing: true,
                 MatchTime: (date.toISOString()).toLocaleString(),
                 Information: info,
-                Address: 'nothing',
+                Address: address?.description,
             }
             console.log(inserts)
 
@@ -113,7 +113,8 @@ export default function CreateMatch() {
                             setOpen(false)
                         }}
                     />
-                    <Text style={[styles.verticallySpaced, styles.mt20]}>{date.toLocaleString()}</Text>
+                    <Text style={[styles.verticallySpaced, styles.mt20]}>Date Chosen {date.toString().substring(0,15)} </Text>
+                    <Text style={[styles.verticallySpaced, styles.mt20]}>Time Chosen {date.toLocaleTimeString().substring(0,4) + " " + date.toLocaleTimeString().substring(8)}</Text>
                 </View>
                 <View style={[styles.verticallySpaced, styles.mt20]}>
                     <Text>Team Size</Text>
@@ -134,7 +135,7 @@ export default function CreateMatch() {
                     <GooglePlacesAutocomplete
                         query={{
                             key: 'AIzaSyBcDag6e2TMRmh8Wc0vktBW7ZvH4NC-zMg',
-                            language: 'en', // language of the results
+                            language: 'en', 
                             components: 'country:uk'
                         }}
                         onPress={(data, details) => { setAddress(data), setDetails(details) }}
@@ -142,7 +143,10 @@ export default function CreateMatch() {
                             InputComp: Input,
                             // leftIcon: { type: 'font-awesome', name: 'chevron-left' },
                             errorStyle: { color: 'red' },
-                        }} placeholder={'Type The Address here and then select one.'} />
+                            
+                        }}
+                        styles={styles.textInput}
+                        placeholder={'Type The Address here and then select one.'} />
                 </View>
                 <View>
                     <Button title='check maps' onPress={() => checkMaps()} />
