@@ -12,9 +12,7 @@ import DatePicker from 'react-native-date-picker'
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 
-// TODO: ADD ADDRESS TO THE INFORMATION ADDED, TRY FIND A MODULE FOR IT 
-// TODO: ADD ADDRESS HANDLES IN DATABASE, FIGURE OUT HOW TO WORK IT WITH THE MAPS FIRST
-// TODO: MAKE SURE THE DATE IS MORE THAN 24 HOURS THAN NOW TO ADD IT TO THE DATABASE
+// TODO: MAKE SURE THE DATE IS MORE THAN 24 HOURS THAN NOW TO ADD IT TO THE DATABASE CHECK EVERYTHING IS THERE BEFORE SUBMITTING 
 // TODO: CHANGE THE DATABASE SO THAT USERS CAN ONLY MAKE ONE MATCH PER WEEK
 // TODO: BETTER STYLING FOR EVERYTHING IN THIS PAGE
 // TODO: CHECK THE TRIGGER AND FUNCTIONS IN SQL TO MAKE SURE THAT IF IT'S BEEN LESS THAN 24 HOURS UPCOMING GETS SET TO FALSE
@@ -40,7 +38,7 @@ export default function CreateMatch() {
 
     let json_string: string = storage.getString('session')!
     const session = JSON.parse(json_string)
-    const user_id = session?.user?.identities?.[0]?.id
+    // const user_id = session?.user?.identities?.[0]?.id
 
     async function insertNewMatch() {
         console.log(TotalPlayers, date, Gender, info, '\naddress:\n', address)
@@ -49,25 +47,31 @@ export default function CreateMatch() {
             setLoading(true)
             if (!session?.user) throw new Error('No user on the session!')
 
-            const inserts = {
-                TotalPlayers: TotalPlayers,
-                Gender: Gender,
-                PlayerCount: 0,
-                UpComing: true,
-                MatchTime: (date.toISOString()).toLocaleString(),
-                Information: info,
-                Address: address?.description,
+            if (address === null || address === "") {
+                alert("Address is empty, make sure you select the address after typing it")
+            } else {
+
+                const inserts = {
+                    TotalPlayers: TotalPlayers,
+                    Gender: Gender,
+                    PlayerCount: 0,
+                    UpComing: true,
+                    MatchTime: (date.toISOString()).toLocaleString(),
+                    Information: info,
+                    Address: address?.description,
+                }
+                console.log(inserts)
+
+                let { data, error } = await supabase.from('Session').upsert(inserts).select()
+
+                console.log("data: ", data)
+
+                if (error) {
+                    console.log("error: ", error)
+                    throw error
+                }
             }
-            console.log(inserts)
 
-            let { data, error } = await supabase.from('Session').upsert(inserts).select()
-
-            console.log("data: ", data)
-
-            if (error) {
-                console.log("error: ", error)
-                throw error
-            }
         } catch (error) {
             if (error instanceof Error) {
                 Alert.alert(error.message)
@@ -113,8 +117,8 @@ export default function CreateMatch() {
                             setOpen(false)
                         }}
                     />
-                    <Text style={[styles.verticallySpaced, styles.mt20]}>Date Chosen {date.toString().substring(0,15)} </Text>
-                    <Text style={[styles.verticallySpaced, styles.mt20]}>Time Chosen {date.toLocaleTimeString().substring(0,4) + " " + date.toLocaleTimeString().substring(8)}</Text>
+                    <Text style={[styles.verticallySpaced, styles.mt20]}>Date Chosen {date.toString().substring(0, 15)} </Text>
+                    <Text style={[styles.verticallySpaced, styles.mt20]}>Time Chosen {date.toLocaleTimeString().substring(0, 5) + " " + date.toLocaleTimeString().substring(8)}</Text>
                 </View>
                 <View style={[styles.verticallySpaced, styles.mt20]}>
                     <Text>Team Size</Text>
@@ -135,7 +139,7 @@ export default function CreateMatch() {
                     <GooglePlacesAutocomplete
                         query={{
                             key: 'AIzaSyBcDag6e2TMRmh8Wc0vktBW7ZvH4NC-zMg',
-                            language: 'en', 
+                            language: 'en',
                             components: 'country:uk'
                         }}
                         onPress={(data, details) => { setAddress(data), setDetails(details) }}
@@ -143,7 +147,7 @@ export default function CreateMatch() {
                             InputComp: Input,
                             // leftIcon: { type: 'font-awesome', name: 'chevron-left' },
                             errorStyle: { color: 'red' },
-                            
+
                         }}
                         styles={styles.textInput}
                         placeholder={'Type The Address here and then select one.'} />
