@@ -30,7 +30,6 @@ export default function CreateMatch() {
 
     // THIS IS FOR ADDRESS
     const [address, setAddress] = useState<any | null>(null)
-    const [addressDetails, setDetails] = useState<any | null>(null)
 
     const storage = useMMKV()
 
@@ -70,6 +69,7 @@ export default function CreateMatch() {
                     console.log("error: ", error)
                     throw error
                 }
+                navigation.navigate("Find Match")
             }
 
         } catch (error) {
@@ -78,6 +78,7 @@ export default function CreateMatch() {
             }
         } finally {
             setLoading(false)
+            
         }
     }
 
@@ -142,7 +143,7 @@ export default function CreateMatch() {
                             language: 'en',
                             components: 'country:uk'
                         }}
-                        onPress={(data, details) => { setAddress(data), setDetails(details) }}
+                        onPress={(data, details) => { setAddress(data) }}
                         textInputProps={{
                             InputComp: Input,
                             // leftIcon: { type: 'font-awesome', name: 'chevron-left' },
@@ -179,7 +180,7 @@ export default function CreateMatch() {
                     <Button
                         title={'Create Match'}
                         color={'rgb(245, 148, 92)'} titleStyle={{ color: 'black' }}
-                        onPress={() => { insertNewMatch(), navigation.navigate("Find Match") }}
+                        onPress={() => { insertNewMatch() }}
                         disabled={loading}
                     />
                 </View>

@@ -1,25 +1,32 @@
 import { RefreshControl, ScrollView, View, Text, StyleSheet, FlatList, Linking, Platform, Pressable } from 'react-native'
-import React from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../../lib/supabase'
 import { useMMKV } from 'react-native-mmkv'
-import { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useIsFocused } from '@react-navigation/native'
 import Modal from 'react-native-modal'
-import { Button, Input } from '@rneui/themed'
+import { Button } from '@rneui/themed'
 import { Picker } from '@react-native-picker/picker'
 
-// TODO: PLAYERS CAN ONLY CHOOSE FROM AVAILABLE ROLES 
-// TODO: WHEN A PLAYER JOINED ALREADY, MAKE IT SO THAT THEY CAN'T PRESS THE JOIN BUTTON
-// TODO: FIX THE TIME (TRY SHOW IT TO DEVICE TIME)
-// TODO: IMPLEMENT WITH RPC INSTEAD (SORT BY DATE CLOSEST OR AMOUNT OF PLAYERS NEEDED)
-
 export default function MatchScreen() {
-  const [refreshing, setRefreshing] = useState(false);
-  const [matches, setMatches] = useState<any>([]);
-  const storage = useMMKV()
+  const [refreshing, setRefreshing] = useState(false)
+  const [matches, setMatches] = useState<any[]>([])
+  const [showModal, setShowModal] = useState(false)
+  const [selectedMatch, setSelectedMatch] = useState<any>(null)
+  const [positionChosen, setPositionChosen] = useState<string>('GK')
+  const [availablePositions, setAvailablePositions] = useState<string[]>([])
 
+  // TODO: PLAYERS CAN ONLY CHOOSE FROM AVAILABLE ROLES 
+  // TODO: WHEN A PLAYER JOINED ALREADY, MAKE IT SO THAT THEY CAN'T PRESS THE JOIN BUTTON
+  // TODO: FIX THE TIME (TRY SHOW IT TO DEVICE TIME)
+  // TODO: IMPLEMENT WITH RPC INSTEAD (SORT BY DATE CLOSEST OR AMOUNT OF PLAYERS NEEDED)
+
+  const storage = useMMKV()
   const isFocused = useIsFocused()
+
+  let json_string: string = storage.getString('session')!
+  const session = JSON.parse(json_string)
+  const user_id = session?.user?.identities?.[0]?.id
 
   useEffect(() => {
     getUpcomingMatches()
@@ -28,156 +35,138 @@ export default function MatchScreen() {
     }
   }, [isFocused])
 
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
+  const onRefresh = useCallback(() => {
+    setRefreshing(true)
     getUpcomingMatches()
     setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
-  }, []);
-
-  let json_string: string = storage.getString('session')!
-  const session = JSON.parse(json_string)
-  const user_id = session?.user?.identities?.[0]?.id
+      setRefreshing(false)
+    }, 1000)
+  }, [])
 
   async function getUpcomingMatches() {
     let { data, error } = await supabase.from('Session').select().eq('UpComing', 'true')
-    // console.log(data?.length)
-    if (error) {
-      // console.log(error)
-    } else {
-      // console.log(data)
+    if (!error && data) {
       setMatches(data)
     }
   }
 
-  function checkMaps(address: any) {
+  function checkMaps(address: string) {
     const scheme = Platform.select({
       ios: `maps://?q=${address}`,
       android: `geo:0,0?q=${address}`,
     })
+    if (scheme) Linking.openURL(scheme)
+  }
 
-    if (scheme) {
-      Linking.openURL(scheme)
+  function removeFromArray(array: string[], item: string) {
+    const index = array.indexOf(item)
+    if (index !== -1) array.splice(index, 1)
+  }
+
+  async function getAvailablePositions(session_id: number, totalPlayers: number) {
+    const { data } = await supabase.rpc('get_position_chosen_by_session', { session_id })
+
+    let positions: string[] = []
+    if (totalPlayers === 7) {
+      positions = ["GK", "GK", "DEF", "DEF", "DEF", "DEF", "MID", "MID", "MID", "MID", "ATK", "ATK", "ATK", "ATK"]
+    } else if (totalPlayers === 5) {
+      positions = ["GK", "GK", "DEF", "DEF", "MID", "MID", "MID", "MID", "ATK", "ATK"]
+    }
+
+    data?.forEach(({ position_chosen }: any) => {
+      removeFromArray(positions, position_chosen)
+    })
+
+    const unique = Array.from(new Set(positions))
+    setAvailablePositions(unique)
+  }
+
+  async function insertPlayerSession(position: string, session_id: number, current_count: number) {
+    // Example logic
+    // await supabase.from('PlayerSession').upsert({ UserID: user_id, SessionID: session_id, PositionChosen: position })
+    // await updateSession(session_id, current_count)
+    console.log('Insert', { position, session_id, current_count })
+  }
+
+  function openModal(match: any) {
+    setSelectedMatch(match)
+    getAvailablePositions(match.SessionID, match.TotalPlayers).then(() => {
+      setShowModal(true)
+    })
+  }
+
+  const getLabel = (value: string) => {
+    switch (value) {
+      case 'GK': return 'Goalkeeper'
+      case 'DEF': return 'Defender'
+      case 'MID': return 'Midfielder'
+      case 'ATK': return 'Attacker'
+      default: return value
     }
   }
 
-  async function updateSession(session_id:number, current_count:number) {
-    const {data, error} = await supabase.from('Session')
-    .update({ PlayerCount: current_count + 1})
-    .eq('SessionID', session_id)
-    .select()
-
-    console.log("Updated Session: ")
-    console.log(data, error)
-  }
-
-  async function insertPlayerSession(position:string, session_id:number, current_count:number) {
-
-    const {data, error} = await supabase.from('PlayerSession')
-    .upsert({ UserID: user_id, SessionID: session_id, PositionChosen: position, Voted: false})
-    .select()
-
-    console.log("Insert Into Player Session: ")
-    console.log(data, error)
-
-    updateSession(session_id, current_count)
-    
-  }
-
-  function DisplayMatches({ match }: { match: any }) {
-    const [showModal, setShowModal] = useState<boolean>(false)
-    const [positionChosen, setPositionChosen] = useState<string>("GK")
-
-    const toggleModal = () => {
-      setShowModal(!showModal)
-    }
-
-    const date: Date = new Date(match.MatchTime)
-    var gender
-    var info
-    if (!match.Information) {
-      info = "No additional info!"
-    }
-    else {
-      info = match.Information
-    }
-
-    // console.log(match.Address)
-    if (match.Gender === "Male") {
-      gender = "Men's Only"
-    }
-    else if (match.Gender === "Female") {
-      gender = "Women's Only"
-    }
+  function DisplayMatches({ match, onJoinPress }: { match: any, onJoinPress: (match: any) => void }) {
+    const date = new Date(match.MatchTime)
+    const gender = match.Gender === "Male" ? "Men's Only" : "Women's Only"
+    const info = match.Information || "No additional info!"
 
     return (
       <View style={styles.whole_view}>
         <View style={styles.view_date}>
-          <Text style={styles.text}>{date.toString().substring(0, 21) + " " + date.toString().substring(25, 28)}</Text>
+          <Text style={styles.text}>{date.toDateString()} {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
         </View>
-        <View>
-          <Text>{gender}</Text>
-        </View>
-        <View>
-          <Text>Player Count: {match.PlayerCount + "/" + match.TotalPlayers * 2}</Text>
-        </View>
-        <View>
-          <Pressable onPress={() => checkMaps(match.Address)}>
-            <Text style={{ textDecorationLine: 'underline' }}>{match.Address}</Text>
-          </Pressable>
-        </View>
-        <View>
-          <Text>{info}</Text>
-        </View>
+        <Text>{gender}</Text>
+        <Text>Player Count: {match.PlayerCount + "/" + match.TotalPlayers * 2}</Text>
+        <Pressable onPress={() => checkMaps(match.Address)}>
+          <Text style={{ textDecorationLine: 'underline' }}>{match.Address}</Text>
+        </Pressable>
+        <Text>{info}</Text>
 
-
-        < View >
-          <Button title="Join!" color={'rgb(245, 148, 92)'} titleStyle={{ color: 'black' }} onPress={toggleModal} />
-
-          <Modal
-            isVisible={showModal}
-            onBackdropPress={toggleModal}
-            style={styles.modal}
-            animationIn="slideInUp"
-            animationOut="slideOutDown"
-          >
-            <View style={styles.modalContent}>
-              {/* <Text style={styles.modalText}>I am the modal content! {match.SessionID}</Text> */}
-              <Text style={styles.modalText}>Pick your position!</Text>
-              <Picker prompt="Which position do you want to play?" selectedValue={positionChosen} onValueChange={itemValue => setPositionChosen(itemValue)}>
-                <Picker.Item label="Goalkeeper" value={"GK"} />
-                <Picker.Item label="Defender" value={"DEF"} />
-                <Picker.Item label="Midfielder" value={"MID"} />
-                <Picker.Item label="Attacker" value={"ATK"} />
-              </Picker>
-
-              <Button title="Join Match!" color={'rgb(245, 148, 92)'} titleStyle={{ color: 'black' }} onPress={() => [toggleModal(), insertPlayerSession(positionChosen, match.SessionID, match.PlayerCount)]} />
-            </View>
-          </Modal>
-
-        </View >
-
+        <Button title="Join!" color={'rgb(245, 148, 92)'} titleStyle={{ color: 'black' }} onPress={() => onJoinPress(match)} />
       </View>
-
     )
   }
 
   return (
     <SafeAreaView>
-      <View>
-        <FlatList
-          data={matches}
-          renderItem={({ item }) =>
-            <>
-              <DisplayMatches match={item}></DisplayMatches>
-            </>
-          }
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        />
-      </View>
+      <FlatList
+        data={matches}
+        renderItem={({ item }) => (
+          <DisplayMatches match={item} onJoinPress={openModal} />
+        )}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      />
+
+      <Modal
+        isVisible={showModal}
+        onBackdropPress={() => setShowModal(false)}
+        style={styles.modal}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+      >
+        <View style={styles.modalContent}>
+          <Text style={styles.modalText}>Pick your position!</Text>
+          <Picker
+            selectedValue={positionChosen}
+            onValueChange={value => setPositionChosen(value)}
+          >
+            {availablePositions.map(pos => (
+              <Picker.Item key={pos} label={getLabel(pos)} value={pos} />
+            ))}
+          </Picker>
+          <Button
+            title="Join Match!"
+            color={'rgb(245, 148, 92)'}
+            titleStyle={{ color: 'black' }}
+            onPress={() => {
+              if (selectedMatch) {
+                insertPlayerSession(positionChosen, selectedMatch.SessionID, selectedMatch.PlayerCount)
+              }
+              setShowModal(false)
+            }}
+          />
+        </View>
+      </Modal>
     </SafeAreaView>
   )
 }
@@ -195,8 +184,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   modal: {
-    justifyContent: 'flex-end', // Align to bottom
-    margin: 0,                  // Remove default margin
+    justifyContent: 'flex-end',
+    margin: 0,
   },
   modalContent: {
     height: '50%',
