@@ -5,9 +5,13 @@ import { useMMKV } from 'react-native-mmkv'
 import { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useIsFocused } from '@react-navigation/native'
-import { Button } from '@rneui/themed'
+import Modal from 'react-native-modal'
+import { Button, Input } from '@rneui/themed'
+import { Picker } from '@react-native-picker/picker'
 
-// MAKE THE DATE A BUTTON SO THAT HWEN PRESSED YOU CAN CHOOSE TO JOIN THE MATCH 
+// TODO: PLAYERS CAN ONLY CHOOSE FROM AVAILABLE ROLES 
+// TODO: WHEN A PLAYER JOINED ALREADY, MAKE IT SO THAT THEY CAN'T PRESS THE JOIN BUTTON
+// TODO: FIX THE TIME (TRY SHOW IT TO DEVICE TIME)
 // TODO: IMPLEMENT WITH RPC INSTEAD (SORT BY DATE CLOSEST OR AMOUNT OF PLAYERS NEEDED)
 
 export default function MatchScreen() {
@@ -16,11 +20,10 @@ export default function MatchScreen() {
   const storage = useMMKV()
 
   const isFocused = useIsFocused()
-  console.log(isFocused)
 
   useEffect(() => {
     getUpcomingMatches()
-    if(isFocused) {
+    if (isFocused) {
       onRefresh()
     }
   }, [isFocused])
@@ -35,6 +38,7 @@ export default function MatchScreen() {
 
   let json_string: string = storage.getString('session')!
   const session = JSON.parse(json_string)
+  const user_id = session?.user?.identities?.[0]?.id
 
   async function getUpcomingMatches() {
     let { data, error } = await supabase.from('Session').select().eq('UpComing', 'true')
@@ -58,7 +62,37 @@ export default function MatchScreen() {
     }
   }
 
+  async function updateSession(session_id:number, current_count:number) {
+    const {data, error} = await supabase.from('Session')
+    .update({ PlayerCount: current_count + 1})
+    .eq('SessionID', session_id)
+    .select()
+
+    console.log("Updated Session: ")
+    console.log(data, error)
+  }
+
+  async function insertPlayerSession(position:string, session_id:number, current_count:number) {
+
+    const {data, error} = await supabase.from('PlayerSession')
+    .upsert({ UserID: user_id, SessionID: session_id, PositionChosen: position, Voted: false})
+    .select()
+
+    console.log("Insert Into Player Session: ")
+    console.log(data, error)
+
+    updateSession(session_id, current_count)
+    
+  }
+
   function DisplayMatches({ match }: { match: any }) {
+    const [showModal, setShowModal] = useState<boolean>(false)
+    const [positionChosen, setPositionChosen] = useState<string>("GK")
+
+    const toggleModal = () => {
+      setShowModal(!showModal)
+    }
+
     const date: Date = new Date(match.MatchTime)
     var gender
     var info
@@ -76,6 +110,7 @@ export default function MatchScreen() {
     else if (match.Gender === "Female") {
       gender = "Women's Only"
     }
+
     return (
       <View style={styles.whole_view}>
         <View style={styles.view_date}>
@@ -89,12 +124,40 @@ export default function MatchScreen() {
         </View>
         <View>
           <Pressable onPress={() => checkMaps(match.Address)}>
-            <Text>{match.Address}</Text>
+            <Text style={{ textDecorationLine: 'underline' }}>{match.Address}</Text>
           </Pressable>
         </View>
         <View>
           <Text>{info}</Text>
         </View>
+
+
+        < View >
+          <Button title="Join!" color={'rgb(245, 148, 92)'} titleStyle={{ color: 'black' }} onPress={toggleModal} />
+
+          <Modal
+            isVisible={showModal}
+            onBackdropPress={toggleModal}
+            style={styles.modal}
+            animationIn="slideInUp"
+            animationOut="slideOutDown"
+          >
+            <View style={styles.modalContent}>
+              {/* <Text style={styles.modalText}>I am the modal content! {match.SessionID}</Text> */}
+              <Text style={styles.modalText}>Pick your position!</Text>
+              <Picker prompt="Which position do you want to play?" selectedValue={positionChosen} onValueChange={itemValue => setPositionChosen(itemValue)}>
+                <Picker.Item label="Goalkeeper" value={"GK"} />
+                <Picker.Item label="Defender" value={"DEF"} />
+                <Picker.Item label="Midfielder" value={"MID"} />
+                <Picker.Item label="Attacker" value={"ATK"} />
+              </Picker>
+
+              <Button title="Join Match!" color={'rgb(245, 148, 92)'} titleStyle={{ color: 'black' }} onPress={() => [toggleModal(), insertPlayerSession(positionChosen, match.SessionID, match.PlayerCount)]} />
+            </View>
+          </Modal>
+
+        </View >
+
       </View>
 
     )
@@ -130,5 +193,20 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 18,
-  }
+  },
+  modal: {
+    justifyContent: 'flex-end', // Align to bottom
+    margin: 0,                  // Remove default margin
+  },
+  modalContent: {
+    height: '50%',
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
 })
