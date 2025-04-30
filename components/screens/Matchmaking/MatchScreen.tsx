@@ -17,8 +17,6 @@ export default function MatchScreen() {
   const [positionChosen, setPositionChosen] = useState<string>('GK')
   const [availablePositions, setAvailablePositions] = useState<string[]>([])
 
-  // TODO: WHEN A PLAYER JOINED ALREADY, MAKE IT SO THAT THEY CAN'T PRESS THE JOIN BUTTON
-  // TODO: FIX THE TIME (TRY SHOW IT TO DEVICE TIME)
   // TODO: IMPLEMENT WITH RPC INSTEAD (SORT BY DATE CLOSEST OR AMOUNT OF PLAYERS NEEDED)
 
   const storage = useMMKV()
@@ -62,7 +60,6 @@ export default function MatchScreen() {
 
     if (!error && data) {
       setMatches(data)
-      // setS(data[0])
     }
   }
 
@@ -142,7 +139,7 @@ export default function MatchScreen() {
     const gender = match.Gender === "Male" ? "Men's Only" : "Women's Only"
     const info = match.Information || "No additional info!"
     var able = false
-    
+
     console.log(joinedMatches, (match.SessionID))
     if (joinedMatches.includes(match.SessionID)) {
       console.log('ran')
@@ -161,69 +158,78 @@ export default function MatchScreen() {
         </Pressable>
         <Text>{info}</Text>
 
-        <Button title={able ? 'Already Joined!' : "Join!"} 
-        color={able ? 'grey' : 'rgb(245, 148, 92)'} 
-        titleStyle={{ color: 'black' }} 
-        onPress={() => onJoinPress(match)}
-        disabled={able}
-         />
+        <Button title={able ? 'Already Joined!' : "Join!"}
+          color={able ? 'grey' : 'rgb(245, 148, 92)'}
+          titleStyle={{ color: 'black' }}
+          onPress={() => onJoinPress(match)}
+          disabled={able}
+        />
       </View>
     )
   }
 
-  return (
-    <SafeAreaView>
-      <FlatList
-        data={matches}
-        renderItem={({ item }) => (
-          <DisplayMatches match={item} onJoinPress={openModal} />
-        )}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-      />
-
-      <Modal
-        isVisible={showModal}
-        onBackdropPress={() => setShowModal(false)}
-        style={styles.modal}
-        animationIn="slideInUp"
-        animationOut="slideOutDown"
-      >
-        <View style={styles.modalContent}>
-          {selectedMatch && (
-            <>
-              <Text style={styles.modalHeaderText}>Match Info</Text>
-              <Text style={styles.modalText}>Date: {new Date(selectedMatch.MatchTime).toLocaleString()}</Text>
-              <Text style={styles.modalText}>{selectedMatch.Gender === 'Male' ? "Men's Only" : "Women's Only"}</Text>
-              <Pressable onPress={() => checkMaps(selectedMatch.Address)}>
-                <Text style={[styles.modalText, { textDecorationLine: 'underline' }]}>Location: {selectedMatch.Address}</Text>
-              </Pressable>
-              <Text style={[styles.modalText, { marginTop: 10 }]}>Pick your position:</Text>
-            </>
+  if (matches.length === 0) {
+    return (
+      <View>
+        <Text>There are no matches right now, make a new one or wait for someone to make it</Text>
+      </View>
+    )
+  }
+  else {
+    return (
+      <SafeAreaView>
+        <FlatList
+          data={matches}
+          renderItem={({ item }) => (
+            <DisplayMatches match={item} onJoinPress={openModal} />
           )}
-          <Picker
-            selectedValue={positionChosen}
-            onValueChange={value => setPositionChosen(value)}
-          >
-            {availablePositions.map(pos => (
-              <Picker.Item key={pos} label={getLabel(pos)} value={pos} />
-            ))}
-          </Picker>
-          <Button
-            title="Join Match!"
-            color={'rgb(245, 148, 92)'}
-            titleStyle={{ color: 'black' }}
-            onPress={() => {
-              if (selectedMatch) {
-                insertPlayerSession(positionChosen, selectedMatch.SessionID, selectedMatch.PlayerCount)
-              }
-              setShowModal(false)
-              onRefresh()
-            }}
-          />
-        </View>
-      </Modal>
-    </SafeAreaView>
-  )
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        />
+
+        <Modal
+          isVisible={showModal}
+          onBackdropPress={() => setShowModal(false)}
+          style={styles.modal}
+          animationIn="slideInUp"
+          animationOut="slideOutDown"
+        >
+          <View style={styles.modalContent}>
+            {selectedMatch && (
+              <>
+                <Text style={styles.modalHeaderText}>Match Info</Text>
+                <Text style={styles.modalText}>Date: {new Date(selectedMatch.MatchTime).toLocaleString()}</Text>
+                <Text style={styles.modalText}>{selectedMatch.Gender === 'Male' ? "Men's Only" : "Women's Only"}</Text>
+                <Pressable onPress={() => checkMaps(selectedMatch.Address)}>
+                  <Text style={[styles.modalText, { textDecorationLine: 'underline' }]}>Location: {selectedMatch.Address}</Text>
+                </Pressable>
+                <Text style={[styles.modalText, { marginTop: 10 }]}>Pick your position:</Text>
+              </>
+            )}
+            <Picker
+              selectedValue={positionChosen}
+              onValueChange={value => setPositionChosen(value)}
+            >
+              {availablePositions.map(pos => (
+                <Picker.Item key={pos} label={getLabel(pos)} value={pos} />
+              ))}
+            </Picker>
+            <Button
+              title="Join Match!"
+              color={'rgb(245, 148, 92)'}
+              titleStyle={{ color: 'black' }}
+              onPress={() => {
+                if (selectedMatch) {
+                  insertPlayerSession(positionChosen, selectedMatch.SessionID, selectedMatch.PlayerCount)
+                }
+                setShowModal(false)
+                onRefresh()
+              }}
+            />
+          </View>
+        </Modal>
+      </SafeAreaView>
+    )
+  }
 }
 
 const styles = StyleSheet.create({
