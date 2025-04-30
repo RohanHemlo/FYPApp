@@ -9,7 +9,6 @@ import { supabase } from '../../lib/supabase'
 
 import MatchScreen from '../screens/Matchmaking/MatchScreen'
 import CreateMatch from '../screens/Matchmaking/CreateMatch'
-import MatchMakeCooldown from '../screens/Matchmaking/MatchMakeCooldown'
 
 // ANIMATED TAB BAR
 
@@ -45,25 +44,13 @@ export default function MatchTopBarContainer() {
   const session = JSON.parse(json_string)
   const user_id = session?.user?.identities?.[0]?.id
 
-  async function getCanMakeMatch() {
-    let { data, error, status } = await supabase.from("Profiles").select("CanMakeMatch").eq('id', user_id)
 
-    if (data) {
-      storage.set('canMakeMatch', data[0].CanMakeMatch)
-    }
-  }
 
-  getCanMakeMatch()
+  // getCanMakeMatch()
   return (
     <Tab.Navigator initialRouteName={"Find Match"} tabBar={(props) => <AnimatedTabBar {...props} />}>
       <Tab.Screen name="Find Match" component={MatchScreen} />
-      {storage.getBoolean('canMakeMatch') ? (
-        <Tab.Screen name="Create a Match" component={CreateMatch} />
-      ) : (
-        <Tab.Screen name="No Match Make" component={MatchMakeCooldown} />
-      )
-      }
-
+      <Tab.Screen name="Create a Match" component={CreateMatch} />
     </Tab.Navigator>
   )
 }

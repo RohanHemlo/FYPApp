@@ -140,7 +140,7 @@ export default function MatchScreen() {
     const info = match.Information || "No additional info!"
     var able = false
 
-    console.log(joinedMatches, (match.SessionID))
+    // console.log(joinedMatches, (match.SessionID))
     if (joinedMatches.includes(match.SessionID)) {
       console.log('ran')
       able = true
