@@ -3,10 +3,11 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../../lib/supabase'
 import { useMMKV } from 'react-native-mmkv'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useIsFocused } from '@react-navigation/native'
+import { useIsFocused, useNavigation } from '@react-navigation/native'
 import Modal from 'react-native-modal'
 import { Button } from '@rneui/themed'
 import { Picker } from '@react-native-picker/picker'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 export default function MatchScreen() {
   const [refreshing, setRefreshing] = useState(false)
@@ -21,6 +22,9 @@ export default function MatchScreen() {
 
   const storage = useMMKV()
   const isFocused = useIsFocused()
+
+  const navigation = useNavigation<NativeStackNavigationProp<any>>()
+
 
   const user_id = storage.getString('user_id')
   const level = storage.getNumber('level')
@@ -248,6 +252,7 @@ export default function MatchScreen() {
                 }
                 setShowModal(false)
                 onRefresh()
+                navigation.navigate('Upcoming')
               }}
             />
           </View>

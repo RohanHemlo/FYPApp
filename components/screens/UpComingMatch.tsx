@@ -8,13 +8,15 @@ import { Button } from '@rneui/themed'
 import { useIsFocused } from '@react-navigation/native'
 import Modal from 'react-native-modal'
 
-// TODO: SHOW HOW MANY PLAYERS THERE ARE AND WHAT POSITIONS THEY HAVE TAKEN 
-
 export default function UpComingMatch() {
     const [joinedMatches, setJoinedMatches] = useState<any[]>([])
     const [selectedMatch, setSelectedMatch] = useState<any>(null)
+    const [groupedPositions, setGroupedPositions] = useState<any>()
     const [showModal, setShowModal] = useState(false)
     const [refreshing, setRefreshing] = useState(false)
+
+    const positions = ['GK', 'DEF', 'MID', 'ATK']
+    const grouped: { [key: string]: string[] } = {}
 
     const storage = useMMKV()
     const isFocused = useIsFocused()
@@ -26,16 +28,17 @@ export default function UpComingMatch() {
         getAlreadyJoinedMatches()
         if (isFocused) {
             onRefresh()
+
         }
     }, [isFocused])
 
     const onRefresh = useCallback(() => {
         setRefreshing(true)
-        
+
         setTimeout(() => {
             getAlreadyJoinedMatches()
             setRefreshing(false)
-        }, 1000)
+        }, 500)
     }, [])
 
     async function getAlreadyJoinedMatches() {
@@ -45,6 +48,47 @@ export default function UpComingMatch() {
             // console.log("in upcoming match: ", data)
             setJoinedMatches(data)
         }
+    }
+
+    async function getPlayerPositions() {
+        let { data, error } = await supabase.rpc('get_players_for_session', { p_session_id: selectedMatch.SessionID })
+
+        if (!error && data) {
+            console.log('DATA: ', data)
+
+            // console.log(selectedPositions)
+            positions.forEach(pos => {
+                grouped[pos] = data
+                    .filter((p: { PositionChosen: string }) => p.PositionChosen === pos)
+                    .map((p: { FirstName: any; SecondName: any }) => `${p.FirstName} ${p.SecondName}`);
+            });
+
+            setGroupedPositions(grouped)
+
+            console.log(grouped, positions)
+        }
+
+
+    }
+
+    function mapSelectedPositions() {
+        console.log(positions, groupedPositions)
+
+        if (groupedPositions) {
+            return (
+
+                <View>
+                    {positions.map(pos => (
+
+                        <Text key={pos}>
+                            {pos} - {groupedPositions[pos].join(', ')}
+                        </Text>
+                    ))}
+                </View>
+            )
+        }
+
+
     }
 
     function checkMaps(address: string) {
@@ -78,7 +122,7 @@ export default function UpComingMatch() {
     const alertMessageBeforeLeave = () => Alert.alert('Leaving', 'Are you sure you want to leave?', [
         {
             text: 'Yes',
-            onPress: () => [leaveSession(selectedMatch.SessionID, selectedMatch.PlayerCount), setShowModal(false), onRefresh()] 
+            onPress: () => [leaveSession(selectedMatch.SessionID, selectedMatch.PlayerCount), setShowModal(false), onRefresh()]
         },
         {
             text: 'Cancel',
@@ -107,7 +151,6 @@ export default function UpComingMatch() {
         const level = getLevel(match.Level)
         const info = match.Information || "No additional info!"
         var able = false
-
 
         return (
             <View style={styles.whole_view}>
@@ -158,6 +201,8 @@ export default function UpComingMatch() {
                     style={styles.modal}
                     animationIn="slideInUp"
                     animationOut="slideOutDown"
+                    onModalWillShow={() => getPlayerPositions()}
+                    onModalWillHide={() => onRefresh()}
                 >
                     <View style={styles.modalContent}>
                         {selectedMatch && (
@@ -169,7 +214,8 @@ export default function UpComingMatch() {
                                     <Text style={[styles.modalText, { textDecorationLine: 'underline' }]}>Location: {selectedMatch.Address}</Text>
                                 </Pressable>
                                 <Text style={styles.modalText}>Level: {getLevel(selectedMatch.Level)} <Text style={styles.modalWarning}>{checkLevel(selectedMatch.Level)}</Text></Text>
-                                <Text style={[styles.modalText, { marginTop: 10 }]}>Pick your position:</Text>
+                                <Text style={[styles.modalText, { marginTop: 10 }]}>Positions:</Text>
+                                {mapSelectedPositions()}
                             </>
                         )}
 
