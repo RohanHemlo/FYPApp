@@ -152,6 +152,7 @@ export default function SignUp() {
                 <Input label="Favourite Football Club?" value={FavouriteClub || ''} onChangeText={(text) => setFavouriteClub(text)} />
             </View>
             <View style={styles.verticallySpaced}>
+                <Text>Football Level?</Text>
                 <Picker selectedValue={Level} onValueChange={(itemValue) => setLevel(itemValue)} >
                     <Picker.Item label="Beginner" value={1} />
                     <Picker.Item label="Casual" value={2} />
@@ -166,7 +167,7 @@ export default function SignUp() {
                 <Button
                     title={loading ? 'Loading ...' : 'Sign Up!'}
                     color={'rgb(245, 148, 92)'}
-                    titleStyle={{color: 'black'}}
+                    titleStyle={{ color: 'black' }}
                     onPress={() => { signUpWithEmail() }}
                     disabled={loading}
                 />

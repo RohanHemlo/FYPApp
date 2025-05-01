@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, lazy } from 'react'
 import { View, Text, Pressable, Animated, Dimensions, StyleSheet } from 'react-native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import type { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs'
@@ -39,18 +39,10 @@ const Tab = createMaterialTopTabNavigator()
 
 export default function MatchTopBarContainer() {
 
-  const storage = useMMKV()
-  let json_string: string = storage.getString('session')!
-  const session = JSON.parse(json_string)
-  const user_id = session?.user?.identities?.[0]?.id
-
-
-
-  // getCanMakeMatch()
   return (
     <Tab.Navigator initialRouteName={"Find Match"} tabBar={(props) => <AnimatedTabBar {...props} />}>
       <Tab.Screen name="Find Match" component={MatchScreen} />
-      <Tab.Screen name="Create a Match" component={CreateMatch} />
+      <Tab.Screen name="Create a Match" options={{lazy: true}} component={CreateMatch} />
     </Tab.Navigator>
   )
 }

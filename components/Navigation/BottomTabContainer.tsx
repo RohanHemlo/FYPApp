@@ -50,7 +50,7 @@ export default function TabContainer() {
             <Tab.Screen name={"Play!"} component={MatchTopBarContainer} />
             <Tab.Screen name={"Upcoming"} component={UpComingMatch} />
             <Tab.Screen name={"Settings"} component={SettingsNavigation} />
-            
+
         </Tab.Navigator>
     )
 }

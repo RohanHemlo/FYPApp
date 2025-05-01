@@ -22,9 +22,10 @@ export default function MatchScreen() {
   const storage = useMMKV()
   const isFocused = useIsFocused()
 
-  let json_string: string = storage.getString('session')!
-  const session = JSON.parse(json_string)
-  const user_id = session?.user?.identities?.[0]?.id
+  const user_id = storage.getString('user_id')
+  const level = storage.getNumber('level')
+  const gender = storage.getString('sex')
+  // console.log(gender)
 
   useEffect(() => {
     getUpcomingMatches()
@@ -38,7 +39,7 @@ export default function MatchScreen() {
     getUpcomingMatches()
     setTimeout(() => {
       setRefreshing(false)
-    }, 1000)
+    }, 1500)
   }, [])
 
   async function getAlreadyJoined() {
@@ -54,7 +55,7 @@ export default function MatchScreen() {
   }
 
   async function getUpcomingMatches() {
-    let { data, error } = await supabase.from('Session').select().eq('UpComing', 'true')
+    let { data, error } = await supabase.from('Session').select().eq('UpComing', 'true').eq('Gender', gender)
 
     getAlreadyJoined()
 
@@ -134,15 +135,36 @@ export default function MatchScreen() {
     }
   }
 
+  const checkLevel = (match_level: number | undefined) => {
+    let string = ''
+    if (match_level != level) {
+      string = "This is a different difficulty to your chosen difficulty!"
+    }
+
+    return (string)
+  }
+
+  const getLevel = (value: number | undefined) => {
+    switch (value) {
+      case 1: return "Beginner"
+      case 2: return "Casual"
+      case 3: return "Amateur"
+      case 4: return "Expert"
+      case 5: return "All-Star"
+      default: return value
+    }
+  }
+
   function DisplayMatches({ match, onJoinPress }: { match: any, onJoinPress: (match: any) => void }) {
     const date = new Date(match.MatchTime)
     const gender = match.Gender === "Male" ? "Men's Only" : "Women's Only"
+    const level = getLevel(match.Level)
     const info = match.Information || "No additional info!"
     var able = false
 
     // console.log(joinedMatches, (match.SessionID))
     if (joinedMatches.includes(match.SessionID)) {
-      console.log('ran')
+      // console.log('ran')
       able = true
     }
 
@@ -156,6 +178,7 @@ export default function MatchScreen() {
         <Pressable onPress={() => checkMaps(match.Address)}>
           <Text style={{ textDecorationLine: 'underline' }}>{match.Address}</Text>
         </Pressable>
+        <Text>Level: {level}</Text>
         <Text>{info}</Text>
 
         <Button title={able ? 'Already Joined!' : "Join!"}
@@ -176,6 +199,7 @@ export default function MatchScreen() {
     )
   }
   else {
+    console.log("IN MATCH SCREEN:", matches)
     return (
       <SafeAreaView>
         <FlatList
@@ -197,11 +221,12 @@ export default function MatchScreen() {
             {selectedMatch && (
               <>
                 <Text style={styles.modalHeaderText}>Match Info</Text>
-                <Text style={styles.modalText}>Date: {new Date(selectedMatch.MatchTime).toLocaleString()}</Text>
+                <Text style={styles.modalText}>Date: {new Date(selectedMatch.MatchTime).toDateString()} {new Date(selectedMatch.MatchTime).toLocaleString([], { hour: '2-digit', minute: '2-digit' })}</Text>
                 <Text style={styles.modalText}>{selectedMatch.Gender === 'Male' ? "Men's Only" : "Women's Only"}</Text>
                 <Pressable onPress={() => checkMaps(selectedMatch.Address)}>
                   <Text style={[styles.modalText, { textDecorationLine: 'underline' }]}>Location: {selectedMatch.Address}</Text>
                 </Pressable>
+                <Text style={styles.modalText}>Level: {getLevel(selectedMatch.Level)} <Text style={styles.modalWarning}>{checkLevel(selectedMatch.Level)}</Text></Text>
                 <Text style={[styles.modalText, { marginTop: 10 }]}>Pick your position:</Text>
               </>
             )}
@@ -258,6 +283,10 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 18,
     // marginBottom: 20,
+  },
+  modalWarning: {
+    fontSize: 14,
+    color: 'red',
   },
   modalHeaderText: {
     fontSize: 18,

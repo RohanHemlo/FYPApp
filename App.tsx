@@ -25,14 +25,35 @@ export default function App() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       storage.set('session', JSON.stringify(session))
+      storage.set('user_id', session?.user?.identities?.[0]?.id!)
+      getGender()
+      getLevel()
     })
 
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
       storage.set('session', JSON.stringify(session))
+      storage.set('user_id', session?.user?.identities?.[0]?.id!)
+      getGender()
+      getLevel()
     })
 
   }, [])
+
+  async function getGender() {
+    let { data } = await supabase.from('Profiles').select("Gender").eq('id', storage.getString('user_id'))
+    if (data) {
+      storage.set('sex', data[0].Gender)
+    }
+  }
+
+  async function getLevel() {
+    let { data } = await supabase.from('Profiles').select("Level").eq('id', storage.getString('user_id'))
+    if (data) {
+      console.log("IN APP: ", data[0].Level)
+      storage.set('level', data[0].Level)
+    }
+  }
 
   // }
 

@@ -6,6 +6,7 @@ import { Session } from '@supabase/supabase-js'
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Picker } from '@react-native-picker/picker'
+import { useMMKV } from 'react-native-mmkv'
 
 export default function EditProfile({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true)
@@ -18,6 +19,9 @@ export default function EditProfile({ session }: { session: Session }) {
   const [Level, setLevel] = useState<number>(1)
 
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
+
+  const storage = useMMKV()
+
 
   console.log(session)
 
@@ -77,7 +81,7 @@ export default function EditProfile({ session }: { session: Session }) {
     try {
       setLoading(true)
       if (!session?.user) throw new Error('No user on the session!')
-      
+
       console.log(FirstName, "")
       if (FirstName === "" || SecondName === "" || FirstName === null || SecondName === null) {
         alert("First Name or Second Name is Empty!!")
@@ -88,16 +92,18 @@ export default function EditProfile({ session }: { session: Session }) {
           id: session?.user.id,
           FirstName,
           SecondName,
-          Gender,
+          // Gender,
           Private,
           FavouritePosition,
           FavouriteClub,
           Level,
         }
 
-        let { data, error } = await supabase.from('Profiles').upsert(updates).select()
+        let { data, error } = await supabase.from('Profiles').update(updates).eq('id', session?.user.id).select()
 
         console.log(error)
+        // storage.set('sex', Gender)
+        storage.set('level', Level)
 
         if (error) {
           throw error
@@ -126,13 +132,13 @@ export default function EditProfile({ session }: { session: Session }) {
       <View style={styles.verticallySpaced}>
         <Input label="Second Name" value={SecondName || ''} onChangeText={(text) => setSecondName(text)} />
       </View>
-      <View style={styles.verticallySpaced}>
+      {/* <View style={styles.verticallySpaced}>
         <Text>Gender</Text>
         <Picker prompt="Gender" selectedValue={Gender} onValueChange={itemValue => setGender(itemValue)}>
           <Picker.Item label="Male" value="Male" />
           <Picker.Item label="Female" value="Female" />
         </Picker>
-      </View>
+      </View> */}
       <View style={styles.verticallySpaced}>
         <Text>
           {Private ? "Profile is Private" : "Profile is Public"}
@@ -157,6 +163,7 @@ export default function EditProfile({ session }: { session: Session }) {
         <Input label="Favourite Football Club?" value={FavouriteClub || ''} onChangeText={(text) => setFavouriteClub(text)} />
       </View>
       <View style={styles.verticallySpaced}>
+        <Text>Football Level?</Text>
         <Picker selectedValue={Level} onValueChange={(itemValue) => setLevel(itemValue)} >
           <Picker.Item label="Beginner" value={1} />
           <Picker.Item label="Casual" value={2} />
@@ -170,8 +177,8 @@ export default function EditProfile({ session }: { session: Session }) {
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
           title={loading ? 'Loading ...' : 'Update'}
-          color={'rgb(245, 148, 92)'} titleStyle={{color: 'black'}}
-          onPress={() => {updateProfile({ FirstName, SecondName, Gender, Private, FavouritePosition, FavouriteClub, Level }), navigation.navigate("Main Settings")}}
+          color={'rgb(245, 148, 92)'} titleStyle={{ color: 'black' }}
+          onPress={() => { updateProfile({ FirstName, SecondName, Gender, Private, FavouritePosition, FavouriteClub, Level }), navigation.navigate("Main Settings") }}
           disabled={loading}
         />
       </View>
