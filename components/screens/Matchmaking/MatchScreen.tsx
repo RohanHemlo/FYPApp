@@ -36,8 +36,8 @@ export default function MatchScreen() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true)
-    getUpcomingMatches()
     setTimeout(() => {
+      getUpcomingMatches()
       setRefreshing(false)
     }, 1500)
   }, [])
@@ -78,7 +78,7 @@ export default function MatchScreen() {
   }
 
   async function getAvailablePositions(session_id: number, totalPlayers: number) {
-    const { data } = await supabase.rpc('get_position_chosen_by_session', { session_id })
+    let { data } = await supabase.rpc('get_position_chosen_by_session', { session_id })
 
     let positions: string[] = []
     if (totalPlayers === 7) {
@@ -96,7 +96,7 @@ export default function MatchScreen() {
   }
 
   async function updateSession(session_id: number, current_count: number) {
-    const { data, error } = await supabase.from('Session')
+    let { data, error } = await supabase.from('Session')
       .update({ PlayerCount: current_count + 1 })
       .eq('SessionID', session_id)
       .select()
@@ -107,7 +107,7 @@ export default function MatchScreen() {
 
   async function insertPlayerSession(position: string, session_id: number, current_count: number) {
 
-    const { data, error } = await supabase.from('PlayerSession')
+    let { data, error } = await supabase.from('PlayerSession')
       .upsert({ UserID: user_id, SessionID: session_id, PositionChosen: position, Voted: false })
       .select()
 
@@ -199,7 +199,7 @@ export default function MatchScreen() {
     )
   }
   else {
-    console.log("IN MATCH SCREEN:", matches)
+    // console.log("IN MATCH SCREEN:", matches)
     return (
       <SafeAreaView>
         <FlatList

@@ -1,4 +1,4 @@
-import { RefreshControl, ScrollView, View, Text, StyleSheet, FlatList, Linking, Platform, Pressable } from 'react-native'
+import { RefreshControl, ScrollView, View, Text, StyleSheet, FlatList, Linking, Platform, Pressable, Alert } from 'react-native'
 import { supabase } from '../../lib/supabase'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Session } from '@supabase/supabase-js'
@@ -8,7 +8,7 @@ import { Button } from '@rneui/themed'
 import { useIsFocused } from '@react-navigation/native'
 import Modal from 'react-native-modal'
 
-// TODO: ADD A BUTTON TO GET MAKE YOU LEAVE THE SESSION
+// TODO: SHOW HOW MANY PLAYERS THERE ARE AND WHAT POSITIONS THEY HAVE TAKEN 
 
 export default function UpComingMatch() {
     const [joinedMatches, setJoinedMatches] = useState<any[]>([])
@@ -31,15 +31,16 @@ export default function UpComingMatch() {
 
     const onRefresh = useCallback(() => {
         setRefreshing(true)
-        getAlreadyJoinedMatches()
+        
         setTimeout(() => {
+            getAlreadyJoinedMatches()
             setRefreshing(false)
-        }, 1500)
+        }, 1000)
     }, [])
 
     async function getAlreadyJoinedMatches() {
         let { data, error } = await supabase.rpc('get_upcoming_sessions_for_user', { p_user_id })
-        console.log("in upcoming: ", data, error)
+        // console.log("in upcoming: ", data, error)
         if (!error && data) {
             // console.log("in upcoming match: ", data)
             setJoinedMatches(data)
@@ -74,6 +75,32 @@ export default function UpComingMatch() {
         return (string)
     }
 
+    const alertMessageBeforeLeave = () => Alert.alert('Leaving', 'Are you sure you want to leave?', [
+        {
+            text: 'Yes',
+            onPress: () => [leaveSession(selectedMatch.SessionID, selectedMatch.PlayerCount), setShowModal(false), onRefresh()] 
+        },
+        {
+            text: 'Cancel',
+            // onPress: () 
+        }
+    ]);
+
+    async function updateSession(session_id: number, current_count: number) {
+        let { data, error } = await supabase.from('Session').update({ PlayerCount: current_count - 1 }).eq('SessionID', session_id).select()
+
+        // console.log('UpdateSession in UpComingMatch: ', data)
+    }
+
+    async function leaveSession(session_id: number, player_count: number) {
+        let { data, error } = await supabase.from('PlayerSession').delete().eq('SessionID', session_id).eq('UserID', p_user_id)
+        // console.log("leaveSession in UpComingMatch:", data)
+
+        updateSession(session_id, player_count)
+
+
+    }
+
     function DisplayMatches({ match, onJoinPress }: { match: any, onJoinPress: (match: any) => void }) {
         const date = new Date(match.MatchTime)
         const gender = match.Gender === "Male" ? "Men's Only" : "Women's Only"
@@ -105,7 +132,7 @@ export default function UpComingMatch() {
         )
     }
 
-    console.log("IN UPCOMING", joinedMatches)
+    // console.log("IN UPCOMING", joinedMatches)
 
     function openModal(match: any) {
         setSelectedMatch(match)
@@ -116,51 +143,49 @@ export default function UpComingMatch() {
 
     return (
         <View>
-        <SafeAreaView>
-            <FlatList
-                data={joinedMatches}
-                renderItem={({ item }) => (
-                    <DisplayMatches match={item} onJoinPress={openModal} />
-                )}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-            />
-
-            <Modal
-                isVisible={showModal}
-                onBackdropPress={() => setShowModal(false)}
-                style={styles.modal}
-                animationIn="slideInUp"
-                animationOut="slideOutDown"
-            >
-                <View style={styles.modalContent}>
-                    {selectedMatch && (
-                        <>
-                            <Text style={styles.modalHeaderText}>Match Info</Text>
-                            <Text style={styles.modalText}>Date: {new Date(selectedMatch.MatchTime).toDateString()} {new Date(selectedMatch.MatchTime).toLocaleString([], { hour: '2-digit', minute: '2-digit' })}</Text>
-                            <Text style={styles.modalText}>{selectedMatch.Gender === 'Male' ? "Men's Only" : "Women's Only"}</Text>
-                            <Pressable onPress={() => checkMaps(selectedMatch.Address)}>
-                                <Text style={[styles.modalText, { textDecorationLine: 'underline' }]}>Location: {selectedMatch.Address}</Text>
-                            </Pressable>
-                            <Text style={styles.modalText}>Level: {getLevel(selectedMatch.Level)} <Text style={styles.modalWarning}>{checkLevel(selectedMatch.Level)}</Text></Text>
-                            <Text style={[styles.modalText, { marginTop: 10 }]}>Pick your position:</Text>
-                        </>
+            <SafeAreaView>
+                <FlatList
+                    data={joinedMatches}
+                    renderItem={({ item }) => (
+                        <DisplayMatches match={item} onJoinPress={openModal} />
                     )}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                />
 
-                    <Button
-                        title="Join Match!"
-                        color={'rgb(245, 148, 92)'}
-                        titleStyle={{ color: 'black' }}
-                        onPress={() => {
-                            // if (selectedMatch) {
-                            //     insertPlayerSession(positionChosen, selectedMatch.SessionID, selectedMatch.PlayerCount)
-                            // }
-                            setShowModal(false)
-                            onRefresh()
-                        }}
-                    />
-                </View>
-            </Modal>
-        </SafeAreaView>
+                <Modal
+                    isVisible={showModal}
+                    onBackdropPress={() => setShowModal(false)}
+                    style={styles.modal}
+                    animationIn="slideInUp"
+                    animationOut="slideOutDown"
+                >
+                    <View style={styles.modalContent}>
+                        {selectedMatch && (
+                            <>
+                                <Text style={styles.modalHeaderText}>Match Info</Text>
+                                <Text style={styles.modalText}>Date: {new Date(selectedMatch.MatchTime).toDateString()} {new Date(selectedMatch.MatchTime).toLocaleString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+                                <Text style={styles.modalText}>{selectedMatch.Gender === 'Male' ? "Men's Only" : "Women's Only"}</Text>
+                                <Pressable onPress={() => checkMaps(selectedMatch.Address)}>
+                                    <Text style={[styles.modalText, { textDecorationLine: 'underline' }]}>Location: {selectedMatch.Address}</Text>
+                                </Pressable>
+                                <Text style={styles.modalText}>Level: {getLevel(selectedMatch.Level)} <Text style={styles.modalWarning}>{checkLevel(selectedMatch.Level)}</Text></Text>
+                                <Text style={[styles.modalText, { marginTop: 10 }]}>Pick your position:</Text>
+                            </>
+                        )}
+
+                        <Button
+                            title="Leave Match"
+                            color={'rgb(245, 148, 92)'}
+                            titleStyle={{ color: 'black' }}
+                            onPress={() => {
+                                if (selectedMatch) {
+                                    alertMessageBeforeLeave()
+                                }
+                            }}
+                        />
+                    </View>
+                </Modal>
+            </SafeAreaView>
         </View>
     )
 }

@@ -13,8 +13,6 @@ import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 import { useIsFocused } from '@react-navigation/native'
 
-// TODO: TRY FIX IT WHERE WHEN YOU CREATE A MATCH AND IT'S SHOWN ON MATCH SCREEN, IT SHOWS 0/10 PEOPLE ENTERED
-
 export default function CreateMatch() {
     const [refreshing, setRefreshing] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -62,8 +60,8 @@ export default function CreateMatch() {
     const Gender = storage.getString('sex')
     const Level = storage.getNumber('level')
     // console.log(storage.get())
-    console.log("in crease match:", storage.getString('sex'))
-    console.log('in create match: ', storage.getNumber('level'))
+    // console.log("in crease match:", storage.getString('sex'))
+    // console.log('in create match: ', storage.getNumber('level'))
 
     const getLevel = (value: number | undefined) => {
         switch (value) {
@@ -101,7 +99,7 @@ export default function CreateMatch() {
 
         setCanCreateMatch(false)
 
-        console.log('SET CREATE MATCH: ', data)
+        // console.log('SET CREATE MATCH: ', data)
     }
 
     async function updateSession(session_id: number, current_count: number) {
@@ -128,7 +126,7 @@ export default function CreateMatch() {
     }
 
     async function insertNewMatch() {
-        console.log(TotalPlayers, date, Gender, info, '\naddress:\n', address)
+        // console.log(TotalPlayers, date, Gender, info, '\naddress:\n', address)
 
         try {
             setLoading(true)
@@ -148,12 +146,12 @@ export default function CreateMatch() {
                     Address: address?.description,
                     Level: Level,
                 }
-                console.log(inserts)
+                // console.log(inserts)
 
                 let { data, error } = await supabase.from('Session').upsert(inserts).select()
 
                 if (data) {
-                    console.log("data: ", data[0].SessionID)
+                    // console.log("data: ", data[0].SessionID)
                     setCreateMatchFalse()
                     insertPlayerSession(positionChosen, data[0].SessionID, 0)
 
@@ -161,7 +159,7 @@ export default function CreateMatch() {
                 }
 
                 if (error) {
-                    console.log("error: ", error)
+                    // console.log("error: ", error)
                     throw error
                 }
 
@@ -198,7 +196,7 @@ export default function CreateMatch() {
 
     getCanMakeMatch()
 
-    console.log(canCreateMatch)
+    // console.log(canCreateMatch)
     if (canCreateMatch) {
 
         var max_day = new Date()

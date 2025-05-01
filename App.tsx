@@ -50,7 +50,6 @@ export default function App() {
   async function getLevel() {
     let { data } = await supabase.from('Profiles').select("Level").eq('id', storage.getString('user_id'))
     if (data) {
-      console.log("IN APP: ", data[0].Level)
       storage.set('level', data[0].Level)
     }
   }
