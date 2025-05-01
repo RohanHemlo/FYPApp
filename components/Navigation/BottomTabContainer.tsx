@@ -3,11 +3,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 // SCREENS
 
-import Profile from '../screens/Profile'
+import HomeTopBarContainer from './HomeTopBarContainer';
 import SettingsNavigation from './SettingsNavigation'
 import MatchTopBarContainer from './MatchTopBarContainer'
-import Leaderboard from '../screens/Leaderboard'
-import UpComingMatch from '../screens/UpComingMatch'
+import CalendarTopBarContainer from './CalendarTopBarContainer';
+import Vote from '../screens/Vote';
 
 export default function TabContainer() {
     const Tab = createBottomTabNavigator()
@@ -20,19 +20,19 @@ export default function TabContainer() {
                     let iconName = 'home';
                     let rn = route.name;
 
-                    if (rn === "Profile") {
+                    if (rn === "Home") {
                         iconName = focused ? 'home' : 'home-outline';
 
                     } else if (rn === "Settings") {
                         iconName = focused ? 'settings' : 'settings-outline';
 
-                    } else if (rn === "Leaderboard") {
+                    } else if (rn === "Vote") {
                         iconName = focused ? 'podium' : 'podium-outline';
 
                     } else if (rn === "Play!") {
                         iconName = focused ? 'football' : 'football-outline';
                     }
-                    else if (rn === "Upcoming") {
+                    else if (rn === "Calendar") {
                         iconName = focused ? 'calendar' : 'calendar-outline';
                     }
 
@@ -45,10 +45,10 @@ export default function TabContainer() {
                 headerShown: false
             })}>
 
-            <Tab.Screen name={"Profile"} component={Profile} />
-            <Tab.Screen name={"Leaderboard"} component={Leaderboard} />
+            <Tab.Screen name={"Home"} component={HomeTopBarContainer} />
+            <Tab.Screen name={"Vote"} component={Vote} />
             <Tab.Screen name={"Play!"} component={MatchTopBarContainer} />
-            <Tab.Screen name={"Upcoming"} component={UpComingMatch} />
+            <Tab.Screen name={"Calendar"} component={CalendarTopBarContainer} />
             <Tab.Screen name={"Settings"} component={SettingsNavigation} />
 
         </Tab.Navigator>

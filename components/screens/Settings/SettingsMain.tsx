@@ -2,7 +2,7 @@ import { TouchableOpacity, StyleSheet, Text, ScrollView, View } from 'react-nati
 import { Button } from '@rneui/themed';
 import { Session } from '@supabase/supabase-js'
 import { MMKV, useMMKV } from 'react-native-mmkv'
-import { supabase } from '../../lib/supabase'
+import { supabase } from '../../../lib/supabase';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useNavigation } from "@react-navigation/native";
 import React from 'react'

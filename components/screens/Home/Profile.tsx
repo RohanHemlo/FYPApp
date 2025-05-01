@@ -1,7 +1,7 @@
 import { TouchableOpacity, StyleSheet, Text, ScrollView, View, Button } from 'react-native'
 import { Session } from '@supabase/supabase-js'
 import { MMKV, useMMKV} from 'react-native-mmkv'
-import { supabase } from '../../lib/supabase'
+import { supabase } from '../../../lib/supabase'
 import React from 'react'
 
 const Profile = () => {

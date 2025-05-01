@@ -43,7 +43,7 @@ export default function MatchScreen() {
     setTimeout(() => {
       getUpcomingMatches()
       setRefreshing(false)
-    }, 1500)
+    }, 500)
   }, [])
 
   async function getAlreadyJoined() {

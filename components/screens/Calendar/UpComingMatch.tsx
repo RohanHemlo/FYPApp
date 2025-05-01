@@ -1,5 +1,5 @@
 import { RefreshControl, ScrollView, View, Text, StyleSheet, FlatList, Linking, Platform, Pressable, Alert } from 'react-native'
-import { supabase } from '../../lib/supabase'
+import { supabase } from '../../../lib/supabase'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Session } from '@supabase/supabase-js'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -7,6 +7,14 @@ import { useMMKV } from 'react-native-mmkv'
 import { Button } from '@rneui/themed'
 import { useIsFocused } from '@react-navigation/native'
 import Modal from 'react-native-modal'
+
+// TODO: MAKE THE HISTORY HERE
+
+// TODO: MAKE VOTE ITS OWN SCREEN
+// TODO: LEADERBOARD CAN SHARE A SCREEN WITH PROFILE
+// TODO: VOTES WILL ONLY SHOW FOR GAMES THAT HAVE BEEN PASSED AND THE USER HASN'T VOTED FOR YET
+// CHANGE THE VOTE TO TRUE AFTER AND TO WHICH PLAYER HE VOTED FOR
+// DO A SCHEDULING JOB 
 
 export default function UpComingMatch() {
     const [joinedMatches, setJoinedMatches] = useState<any[]>([])

@@ -6,8 +6,8 @@ import { supabase } from '../../lib/supabase'
 import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import SettingsMain from '../screens/SettingsMain';
-import EditProfile from '../screens/EditProfile';
+import SettingsMain from '../screens/Settings/SettingsMain';
+import EditProfile from '../screens/Settings/EditProfile';
 
 const Stack = createNativeStackNavigator();
 
