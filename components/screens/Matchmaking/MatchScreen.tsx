@@ -8,6 +8,7 @@ import Modal from 'react-native-modal'
 import { Button } from '@rneui/themed'
 import { Picker } from '@react-native-picker/picker'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { checkMaps } from '../../CustomProps/checkMaps'
 
 export default function MatchScreen() {
   const [refreshing, setRefreshing] = useState(false)
@@ -66,14 +67,6 @@ export default function MatchScreen() {
     if (!error && data) {
       setMatches(data)
     }
-  }
-
-  function checkMaps(address: string) {
-    const scheme = Platform.select({
-      ios: `maps://?q=${address}`,
-      android: `geo:0,0?q=${address}`,
-    })
-    if (scheme) Linking.openURL(scheme)
   }
 
   function removeFromArray(array: string[], item: string) {

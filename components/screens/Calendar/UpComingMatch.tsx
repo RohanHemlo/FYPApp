@@ -1,4 +1,4 @@
-import { RefreshControl, ScrollView, View, Text, StyleSheet, FlatList, Linking, Platform, Pressable, Alert } from 'react-native'
+import { RefreshControl, ScrollView, View, Text, StyleSheet, FlatList, Pressable, Alert } from 'react-native'
 import { supabase } from '../../../lib/supabase'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Session } from '@supabase/supabase-js'
@@ -7,14 +7,7 @@ import { useMMKV } from 'react-native-mmkv'
 import { Button } from '@rneui/themed'
 import { useIsFocused } from '@react-navigation/native'
 import Modal from 'react-native-modal'
-
-// TODO: MAKE THE HISTORY HERE
-
-// TODO: MAKE VOTE ITS OWN SCREEN
-// TODO: LEADERBOARD CAN SHARE A SCREEN WITH PROFILE
-// TODO: VOTES WILL ONLY SHOW FOR GAMES THAT HAVE BEEN PASSED AND THE USER HASN'T VOTED FOR YET
-// CHANGE THE VOTE TO TRUE AFTER AND TO WHICH PLAYER HE VOTED FOR
-// DO A SCHEDULING JOB 
+import { checkMaps } from '../../CustomProps/checkMaps'
 
 export default function UpComingMatch() {
     const [joinedMatches, setJoinedMatches] = useState<any[]>([])
@@ -88,23 +81,13 @@ export default function UpComingMatch() {
                 <View>
                     {positions.map(pos => (
 
-                        <Text key={pos}>
+                        <Text style={styles.modalText} key={pos}>
                             {pos} - {groupedPositions[pos].join(', ')}
                         </Text>
                     ))}
                 </View>
             )
         }
-
-
-    }
-
-    function checkMaps(address: string) {
-        const scheme = Platform.select({
-            ios: `maps://?q=${address}`,
-            android: `geo:0,0?q=${address}`,
-        })
-        if (scheme) Linking.openURL(scheme)
     }
 
     const getLevel = (value: number | undefined) => {
@@ -188,7 +171,6 @@ export default function UpComingMatch() {
     function openModal(match: any) {
         setSelectedMatch(match)
         setShowModal(true)
-
     }
 
 

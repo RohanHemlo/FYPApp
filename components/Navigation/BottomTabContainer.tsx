@@ -14,7 +14,7 @@ export default function TabContainer() {
 
     return (
         <Tab.Navigator
-            initialRouteName={"Profile"}
+            initialRouteName={"Vote"}
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName = 'home';
@@ -27,7 +27,7 @@ export default function TabContainer() {
                         iconName = focused ? 'settings' : 'settings-outline';
 
                     } else if (rn === "Vote") {
-                        iconName = focused ? 'podium' : 'podium-outline';
+                        iconName = focused ? 'checkbox' : 'checkbox-outline';
 
                     } else if (rn === "Play!") {
                         iconName = focused ? 'football' : 'football-outline';

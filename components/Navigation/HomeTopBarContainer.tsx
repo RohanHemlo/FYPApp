@@ -15,8 +15,8 @@ const Tab = createMaterialTopTabNavigator()
 export default function HomeTopBarContainer() {
 
     return (
-        <Tab.Navigator initialRouteName={"Home"} tabBar={(props) => <AnimatedTabBar {...props} />}>
-            <Tab.Screen name="Home" component={Profile} />
+        <Tab.Navigator initialRouteName={"Stats"} tabBar={(props) => <AnimatedTabBar {...props} />}>
+            <Tab.Screen name="Stats" component={Profile} />
             <Tab.Screen name="Leaderboard" component={Leaderboard} />
         </Tab.Navigator>
     )
