@@ -26,7 +26,6 @@ export default function UpComingMatch() {
     const level = storage.getNumber('level')
 
     useEffect(() => {
-        getAlreadyJoinedMatches()
         if (isFocused) {
             onRefresh()
 
@@ -55,7 +54,7 @@ export default function UpComingMatch() {
         let { data, error } = await supabase.rpc('get_players_for_session', { p_session_id: selectedMatch.SessionID })
 
         if (!error && data) {
-            console.log('DATA: ', data)
+            // console.log('DATA: ', data)
 
             // console.log(selectedPositions)
             positions.forEach(pos => {
@@ -66,14 +65,14 @@ export default function UpComingMatch() {
 
             setGroupedPositions(grouped)
 
-            console.log(grouped, positions)
+            // console.log(grouped, positions)
         }
 
 
     }
 
     function mapSelectedPositions() {
-        console.log(positions, groupedPositions)
+        // console.log(positions, groupedPositions)
 
         if (groupedPositions) {
             return (
@@ -171,59 +170,70 @@ export default function UpComingMatch() {
     function openModal(match: any) {
         setSelectedMatch(match)
         setShowModal(true)
-    }
+    }   
 
+    if (joinedMatches.length != 0) {
 
-    return (
-        <View>
-            <SafeAreaView>
-                <FlatList
-                    data={joinedMatches}
-                    renderItem={({ item }) => (
-                        <DisplayMatches match={item} onJoinPress={openModal} />
-                    )}
-                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-                />
-
-                <Modal
-                    isVisible={showModal}
-                    onBackdropPress={() => setShowModal(false)}
-                    style={styles.modal}
-                    animationIn="slideInUp"
-                    animationOut="slideOutDown"
-                    onModalWillShow={() => getPlayerPositions()}
-                    onModalWillHide={() => onRefresh()}
-                >
-                    <View style={styles.modalContent}>
-                        {selectedMatch && (
-                            <>
-                                <Text style={styles.modalHeaderText}>Match Info</Text>
-                                <Text style={styles.modalText}>Date: {new Date(selectedMatch.MatchTime).toDateString()} {new Date(selectedMatch.MatchTime).toLocaleString([], { hour: '2-digit', minute: '2-digit' })}</Text>
-                                <Text style={styles.modalText}>{selectedMatch.Gender === 'Male' ? "Men's Only" : "Women's Only"}</Text>
-                                <Pressable onPress={() => checkMaps(selectedMatch.Address)}>
-                                    <Text style={[styles.modalText, { textDecorationLine: 'underline' }]}>Location: {selectedMatch.Address}</Text>
-                                </Pressable>
-                                <Text style={styles.modalText}>Level: {getLevel(selectedMatch.Level)} <Text style={styles.modalWarning}>{checkLevel(selectedMatch.Level)}</Text></Text>
-                                <Text style={[styles.modalText, { marginTop: 10 }]}>Positions:</Text>
-                                {mapSelectedPositions()}
-                            </>
+        return (
+            <View>
+                <SafeAreaView>
+                    <FlatList
+                        data={joinedMatches}
+                        renderItem={({ item }) => (
+                            <DisplayMatches match={item} onJoinPress={openModal} />
                         )}
+                        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                    />
 
-                        <Button
-                            title="Leave Match"
-                            color={'rgb(245, 148, 92)'}
-                            titleStyle={{ color: 'black' }}
-                            onPress={() => {
-                                if (selectedMatch) {
-                                    alertMessageBeforeLeave()
-                                }
-                            }}
-                        />
-                    </View>
-                </Modal>
-            </SafeAreaView>
-        </View>
-    )
+                    <Modal
+                        isVisible={showModal}
+                        onBackdropPress={() => setShowModal(false)}
+                        style={styles.modal}
+                        animationIn="slideInUp"
+                        animationOut="slideOutDown"
+                        onModalWillShow={() => getPlayerPositions()}
+                        onModalWillHide={() => onRefresh()}
+                    >
+                        <View style={styles.modalContent}>
+                            {selectedMatch && (
+                                <>
+                                    <Text style={styles.modalHeaderText}>Match Info</Text>
+                                    <Text style={styles.modalText}>Date: {new Date(selectedMatch.MatchTime).toDateString()} {new Date(selectedMatch.MatchTime).toLocaleString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+                                    <Text style={styles.modalText}>{selectedMatch.Gender === 'Male' ? "Men's Only" : "Women's Only"}</Text>
+                                    <Pressable onPress={() => checkMaps(selectedMatch.Address)}>
+                                        <Text style={[styles.modalText, { textDecorationLine: 'underline' }]}>Location: {selectedMatch.Address}</Text>
+                                    </Pressable>
+                                    <Text style={styles.modalText}>Level: {getLevel(selectedMatch.Level)} <Text style={styles.modalWarning}>{checkLevel(selectedMatch.Level)}</Text></Text>
+                                    <Text style={[styles.modalText, { marginTop: 10 }]}>Positions:</Text>
+                                    {mapSelectedPositions()}
+                                </>
+                            )}
+
+                            <Button
+                                title="Leave Match"
+                                color={'rgb(245, 148, 92)'}
+                                titleStyle={{ color: 'black' }}
+                                onPress={() => {
+                                    if (selectedMatch) {
+                                        alertMessageBeforeLeave()
+                                    }
+                                }}
+                            />
+                        </View>
+                    </Modal>
+                </SafeAreaView>
+            </View>
+        )
+    }
+    else {
+        return (
+            <View>
+                <Text>
+                    No Upcoming Matches, make sure to join one.
+                </Text>
+            </View>
+        )
+    }
 }
 
 const styles = StyleSheet.create({

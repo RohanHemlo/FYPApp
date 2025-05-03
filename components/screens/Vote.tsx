@@ -1,5 +1,5 @@
-import { View, Text, FlatList, StyleSheet, Pressable } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { RefreshControl, View, Text, FlatList, StyleSheet, Pressable } from 'react-native'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useMMKV } from 'react-native-mmkv'
 import { supabase } from '../../lib/supabase'
 import { useIsFocused } from '@react-navigation/native'
@@ -10,18 +10,21 @@ import Modal from 'react-native-modal'
 import { Button } from '@rneui/themed'
 import { Picker } from '@react-native-picker/picker'
 
-// TODO: PUSH USERS VOTE TO SERVER AND MAKE IT SO THAT AFTER THEY HAVE VOTED, THEIR OWN STATS GO UP AS WELL (DEPENDING ON THE POSITION THEY HAVE PLAYED)
-// VOTES WILL ONLY SHOW FOR GAMES THAT HAVE BEEN PASSED AND THE USER HASN'T VOTED FOR YET
-// CHANGE THE VOTE TO TRUE AFTER AND TO WHICH PLAYER HE VOTED FOR
-// DO A SCHEDULING JOB 
+// TODO: CRON FUNCTION THAT CHECKS IF THE MATCH HAS ENOUGH PLAYERS TO BE PLAYED 24 HOURS BEFORE THE GAME, AND IF NOT IT CANCELS (SEE HOW YOU CAN SEND A NOTIFICATION TOO)
+// TODO: MAKE HISTORY, HOME SCREEN SHOWING ALL STATS AND LEADERBOARD
 
 export default function Vote() {
+  const [refreshing, setRefreshing] = useState(false)
+
   const [matchesPlayed, setMatchesPlayed] = useState<any[]>([])
   const [selectedMatch, setSelectedMatch] = useState<any>(null)
-  const [players, setPlayers] = useState<any[]>([])
+
+  const [votePlayers, setVotePlayers] = useState<any[]>([])
   const [groupedPositions, setGroupedPositions] = useState<any>()
   const [showModal, setShowModal] = useState(false)
-  const [selectedUserId, setSelectedUserId] = useState<string>('');
+  const [userPlayer, setUserPlayer] = useState<any>()
+  const [userRatings, setUserRatings] = useState<any>()
+  const [selectedPlayerSessionId, setSelectedPlayerSessionID] = useState<number>()
 
   const positions = ['GK', 'DEF', 'MID', 'ATK']
   const grouped: { [key: string]: string[] } = {}
@@ -30,14 +33,27 @@ export default function Vote() {
   const isFocused = useIsFocused()
 
   useEffect(() => {
-    getPlayerSessions()
+
     if (isFocused) {
-
-
+      onRefresh()
     }
   }, [isFocused])
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true)
+    setTimeout(() => {
+      getPlayerSessions()
+      getPlayerRatings()
+      setRefreshing(false)
+    }, 500)
+  }, [])
+
   const p_user_id = storage.getString('user_id')
+
+  function removeFromArray(array: any[], item: any) {
+    const index = array.indexOf(item)
+    if (index !== -1) array.splice(index, 1)
+  }
 
   async function getPlayerSessions() {
     let { data, error } = await supabase.rpc('get_unvoted_finished_sessions_for_user', { p_user_id })
@@ -53,19 +69,102 @@ export default function Vote() {
     let { data, error } = await supabase.rpc('get_players_for_session', { p_session_id: selectedMatch.SessionID })
 
     if (!error && data) {
-
-      setPlayers(data)
-
-      setSelectedUserId(data[0].UserID)
+      // console.log(data)
+      // setPlayers(data)
 
       positions.forEach(pos => {
         grouped[pos] = data
           .filter((p: { PositionChosen: string }) => p.PositionChosen === pos)
           .map((p: { FirstName: any; SecondName: any }) => `${p.FirstName} ${p.SecondName}`);
-      });
+      })
+
+      data.forEach((item: any) => {
+        if (item.UserID === p_user_id) {
+          setUserPlayer(item)
+          removeFromArray(data, item)
+        }
+      })
+
+      setVotePlayers(data)
+
+      setSelectedPlayerSessionID(data[0].PlayerSessionID)
 
       setGroupedPositions(grouped)
-  
+
+      // console.log(userPlayer)
+
+    }
+  }
+
+  async function getPlayerRatings() {
+    let { data, error } = await supabase.from('Rating').select().eq('userid', p_user_id)
+
+    if (data) {
+      setUserRatings(data[0])
+    }
+
+    // console.log("User ratings dribbling: ", userRatings)
+  }
+
+  async function increaseUserStats() {
+    const ratingUpdates = {
+      'ATK': {
+        ShootingRating: userRatings.ShootingRating + 0.25,
+        DribblingRating: userRatings.DribblingRating + 0.25,
+      },
+      'MID': {
+        PassingRating: userRatings.PassingRating + 0.25,
+        DribblingRating: userRatings.DribblingRating + 0.25,
+      },
+      'DEF': {
+        PassingRating: userRatings.PassingRating + 0.25,
+        DefendingRating: userRatings.DefendingRating + 0.25,
+      },
+      'GK': {
+        PassingRating: userRatings.PassingRating + 0.25,
+        DefendingRating: userRatings.DefendingRating + 0.25,
+        TeamworkRating: userRatings.TeamworkRating + 0.1,
+      },
+    };
+
+    const updates = ratingUpdates[userPlayer.PositionChosen as 'ATK' | 'MID' | 'DEF' | 'GK']
+
+    if (!updates) {
+      console.warn('Unknown position:', userPlayer.PositionChosen);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('Rating')
+      .update(updates)
+      .eq('RatingsID', userRatings.RatingsID)
+      .select()
+
+    if (error) {
+      console.error('Error updating ratings:', error);
+    } else {
+      // console.log('Ratings updated:', data);
+    }
+  }
+
+  async function setVoted() {
+    let { data, error, status } = await supabase.from('PlayerSession').update({ Voted: true }).eq('PlayerSessionID', userPlayer.PlayerSessionID).select()
+
+    // console.log("SetVoted :", error)
+    if (data) {
+      console.log("Set voted ", data)
+    }
+  }
+
+
+  async function insertVote() {
+    let { data, error } = await supabase.from('Vote').insert({ PlayerSessionID: selectedPlayerSessionId, VoterUserID: p_user_id }).select()
+
+    setVoted()
+
+
+    if (data) {
+      console.log("Insert vote: ", data)
     }
   }
 
@@ -128,6 +227,15 @@ export default function Vote() {
     }
   }
 
+  if (matchesPlayed.length === 0) {
+    return (
+      <View>
+        <Text>You can only vote for games you have played in and have finished.</Text>
+        <Text>Note: it can take up to an hour after your game finished for the voting options to come up.</Text>
+      </View>
+    )
+  }
+
   return (
     <View>
       <SafeAreaView>
@@ -136,6 +244,7 @@ export default function Vote() {
           renderItem={({ item }) => (
             <DisplayVotes match={item} onPress={openModal} />
           )}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         />
 
         <Modal
@@ -150,7 +259,7 @@ export default function Vote() {
           <View style={styles.modalContent}>
             {selectedMatch && (
               <>
-                <Text style={styles.modalHeaderText}>Match Info</Text>
+                <Text style={styles.modalHeaderText}>Match Info - Vote for the Best Player!</Text>
                 <Text style={styles.modalText}>Date: {new Date(selectedMatch.MatchTime).toDateString()} {new Date(selectedMatch.MatchTime).toLocaleString([], { hour: '2-digit', minute: '2-digit' })}</Text>
                 <Pressable onPress={() => checkMaps(selectedMatch.Address)}>
                   <Text style={[styles.modalText, { textDecorationLine: 'underline' }]}>Location: {selectedMatch.Address}</Text>
@@ -161,15 +270,14 @@ export default function Vote() {
               </>
             )}
             <Picker
-              selectedValue={selectedUserId}
-              onValueChange={value => setSelectedUserId(value)}
+              selectedValue={selectedPlayerSessionId}
+              onValueChange={value => setSelectedPlayerSessionID(value)}
             >
-              {players.map(player => (
+              {votePlayers.map(player => (
                 <Picker.Item
                   key={player.UserID}
                   label={`${player.FirstName} ${player.SecondName} - ${player.PositionChosen}`}
-                  // label={player.FirstName}
-                  value={player.UserID}
+                  value={player.PlayerSessionID}
                 />
               ))}
             </Picker>
@@ -179,8 +287,10 @@ export default function Vote() {
               titleStyle={{ color: 'black' }}
               onPress={() => {
                 if (selectedMatch) {
-                  console.log('AFTER BUTTON CLICk: ', selectedUserId)
-                  // alertMessageBeforeLeave()
+                  insertVote()
+                  increaseUserStats()
+                  setShowModal(false)
+                  onRefresh()
                 }
               }
               }

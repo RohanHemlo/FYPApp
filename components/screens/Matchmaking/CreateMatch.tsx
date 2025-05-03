@@ -32,16 +32,16 @@ export default function CreateMatch() {
     useEffect(() => {
         // getUpcomingMatches()
         if (isFocused) {
-            onRefresh()
+            getCanMakeMatch()
         }
     }, [isFocused])
 
-    const onRefresh = useCallback(() => {
-        setRefreshing(true)
-        setTimeout(() => {
-            setRefreshing(false)
-        }, 500)
-    }, [])
+    // const onRefresh = useCallback(() => {
+    //     setRefreshing(true)
+    //     setTimeout(() => {
+    //         setRefreshing(false)
+    //     }, 500)
+    // }, [])
 
     const [date, setMatchDate] = useState(min_day)
     const [open, setOpen] = useState(false)
@@ -76,8 +76,8 @@ export default function CreateMatch() {
 
     const getSex = (value: string | undefined) => {
         switch (value) {
-            case 'Male' : return 'Men'
-            case 'Female' : return 'Women'
+            case 'Male': return 'Men'
+            case 'Female': return 'Women'
             default: return value
         }
     }
@@ -155,7 +155,7 @@ export default function CreateMatch() {
                     setCreateMatchFalse()
                     insertPlayerSession(positionChosen, data[0].SessionID, 0)
 
-                    navigation.navigate("Find Match")
+                    navigation.navigate('Calendar', {screen: "Upcoming Match"})
                 }
 
                 if (error) {
@@ -194,7 +194,7 @@ export default function CreateMatch() {
         }
     }
 
-    getCanMakeMatch()
+    // getCanMakeMatch()
 
     // console.log(canCreateMatch)
     if (canCreateMatch) {
@@ -204,120 +204,120 @@ export default function CreateMatch() {
 
         return (
             // <SafeAreaView>
-                <GestureHandlerRootView>
-                    <ScrollView keyboardShouldPersistTaps={'handled'} style={styles.container}
-                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-                        <View style={[styles.verticallySpaced, styles.mt20]}>
-                            <Button
-                                title="Choose Date and Time"
-                                color={'rgb(245, 148, 92)'}
-                                titleStyle={{ color: 'black' }}
-                                onPress={() => setOpen(true)}
-                                disabled={loading} />
-                            <DatePicker
-                                modal
-                                minimumDate={min_day}
-                                maximumDate={max_day}
-                                open={open}
-                                date={date}
-                                minuteInterval={15}
-                                onConfirm={(date) => {
-                                    setOpen(false)
-                                    setMatchDate(date)
-                                }}
-                                onCancel={() => {
-                                    setOpen(false)
-                                }}
-                            />
-                            <Text style={[styles.verticallySpaced, styles.mt20]}>Date Chosen {date.toString().substring(0, 15)} </Text>
-                            <Text style={[styles.verticallySpaced, styles.mt20]}>Time Chosen {date.toLocaleTimeString().substring(0, 5) + " " + date.toLocaleTimeString().substring(8)}</Text>
-                        </View>
-                        <View style={[styles.verticallySpaced, styles.mt20]}>
-                            <Text>Team Size</Text>
-                            <Picker prompt="What team size?" selectedValue={TotalPlayers} onValueChange={itemValue => setTotalPlayers(itemValue)}>
-                                <Picker.Item label="5 a-side" value={5} />
-                                <Picker.Item label="7 a-side" value={7} />
-                            </Picker>
-                        </View>
-                        {/* <View style={[styles.verticallySpaced, styles.mt20]}>
+            <GestureHandlerRootView>
+                <ScrollView keyboardShouldPersistTaps={'handled'} style={styles.container}>
+                    {/* refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} */}
+                    <View style={[styles.verticallySpaced, styles.mt20]}>
+                        <Button
+                            title="Choose Date and Time"
+                            color={'rgb(245, 148, 92)'}
+                            titleStyle={{ color: 'black' }}
+                            onPress={() => setOpen(true)}
+                            disabled={loading} />
+                        <DatePicker
+                            modal
+                            minimumDate={min_day}
+                            maximumDate={max_day}
+                            open={open}
+                            date={date}
+                            minuteInterval={15}
+                            onConfirm={(date) => {
+                                setOpen(false)
+                                setMatchDate(date)
+                            }}
+                            onCancel={() => {
+                                setOpen(false)
+                            }}
+                        />
+                        <Text style={[styles.verticallySpaced, styles.mt20]}>Date Chosen {date.toString().substring(0, 15)} </Text>
+                        <Text style={[styles.verticallySpaced, styles.mt20]}>Time Chosen {date.toLocaleTimeString().substring(0, 5) + " " + date.toLocaleTimeString().substring(8)}</Text>
+                    </View>
+                    <View style={[styles.verticallySpaced, styles.mt20]}>
+                        <Text>Team Size</Text>
+                        <Picker prompt="What team size?" selectedValue={TotalPlayers} onValueChange={itemValue => setTotalPlayers(itemValue)}>
+                            <Picker.Item label="5 a-side" value={5} />
+                            <Picker.Item label="7 a-side" value={7} />
+                        </Picker>
+                    </View>
+                    {/* <View style={[styles.verticallySpaced, styles.mt20]}>
                         <Text>Mens' or Womens'?</Text>
                         <Picker prompt="Mens' or Womens'?" selectedValue={Gender} onValueChange={itemValue => setGender(itemValue)}>
                             <Picker.Item label="Mens" value="Male" />
                             <Picker.Item label="Womens" value="Female" />
                         </Picker>
                     </View> */}
-                        <View style={[styles.verticallySpaced, styles.mt20]}>
-                            <Text>Address</Text>
-                            <GooglePlacesAutocomplete
-                                query={{
-                                    key: 'AIzaSyBcDag6e2TMRmh8Wc0vktBW7ZvH4NC-zMg',
-                                    language: 'en',
-                                    components: 'country:uk'
-                                }}
-                                onPress={(data, details) => { setAddress(data) }}
-                                textInputProps={{
-                                    InputComp: Input,
-                                    // leftIcon: { type: 'font-awesome', name: 'chevron-left' },
-                                    errorStyle: { color: 'red' },
+                    <View style={[styles.verticallySpaced, styles.mt20]}>
+                        <Text>Address</Text>
+                        <GooglePlacesAutocomplete
+                            query={{
+                                key: 'AIzaSyBcDag6e2TMRmh8Wc0vktBW7ZvH4NC-zMg',
+                                language: 'en',
+                                components: 'country:uk'
+                            }}
+                            onPress={(data, details) => { setAddress(data) }}
+                            textInputProps={{
+                                InputComp: Input,
+                                // leftIcon: { type: 'font-awesome', name: 'chevron-left' },
+                                errorStyle: { color: 'red' },
 
-                                }}
-                                styles={styles.textInput}
-                                placeholder={'Type The Address here and then select one.'} />
-                        </View>
-                        <View>
-                            <Button title='Check on Maps'
-                                color={'rgb(245, 148, 92)'} titleStyle={{ color: 'black' }}
-                                onPress={() => checkMaps()} />
-                        </View>
-                        <View style={[styles.verticallySpaced, styles.mt20]}>
-                            <Text>Choose your position</Text>
-                            <Picker
-                                selectedValue={positionChosen}
-                                onValueChange={value => setPositionChosen(value)}
-                            >
-                                <Picker.Item label={"Goalkeeper"} value={"GK"} />
-                                <Picker.Item label={"Defender"} value={"DEF"} />
-                                <Picker.Item label={"Midfielder"} value={"MID"} />
-                                <Picker.Item label={"Attacker"} value={"ATK"} />
+                            }}
+                            styles={styles.textInput}
+                            placeholder={'Type The Address here and then select one.'} />
+                    </View>
+                    <View>
+                        <Button title='Check on Maps'
+                            color={'rgb(245, 148, 92)'} titleStyle={{ color: 'black' }}
+                            onPress={() => checkMaps()} />
+                    </View>
+                    <View style={[styles.verticallySpaced, styles.mt20]}>
+                        <Text>Choose your position</Text>
+                        <Picker
+                            selectedValue={positionChosen}
+                            onValueChange={value => setPositionChosen(value)}
+                        >
+                            <Picker.Item label={"Goalkeeper"} value={"GK"} />
+                            <Picker.Item label={"Defender"} value={"DEF"} />
+                            <Picker.Item label={"Midfielder"} value={"MID"} />
+                            <Picker.Item label={"Attacker"} value={"ATK"} />
 
-                            </Picker>
-                        </View>
-                        <View>
-                            <Text>Selected Level: {getLevel(Level)}</Text>
-                        </View>
-                        <View>
-                            <Text>{getSex(Gender)}'s Only</Text>
-                        </View>
-                        <View style={[styles.verticallySpaced, styles.mt20]}>
-                            <Text>Additional Information</Text>
-                            <SafeAreaProvider>
-                                <SafeAreaView>
-                                    <TextInput
-                                        editable
-                                        multiline
-                                        numberOfLines={4}
-                                        maxLength={40}
-                                        selectionColor={'grey'}
-                                        placeholder="Write any aditional information here! For example, what type of boots to bring, any costs"
-                                        onChangeText={text => setInfo(text)}
-                                        value={info}
-                                        style={styles.textInput}
-                                    />
-                                </SafeAreaView>
-                            </SafeAreaProvider>
-                        </View>
+                        </Picker>
+                    </View>
+                    <View>
+                        <Text>Selected Level: {getLevel(Level)}</Text>
+                    </View>
+                    <View>
+                        <Text>{getSex(Gender)}'s Only</Text>
+                    </View>
+                    <View style={[styles.verticallySpaced, styles.mt20]}>
+                        <Text>Additional Information</Text>
+                        <SafeAreaProvider>
+                            <SafeAreaView>
+                                <TextInput
+                                    editable
+                                    multiline
+                                    numberOfLines={4}
+                                    maxLength={40}
+                                    selectionColor={'grey'}
+                                    placeholder="Write any aditional information here! For example, what type of boots to bring, any costs"
+                                    onChangeText={text => setInfo(text)}
+                                    value={info}
+                                    style={styles.textInput}
+                                />
+                            </SafeAreaView>
+                        </SafeAreaProvider>
+                    </View>
 
 
-                        <View style={[styles.verticallySpaced, styles.mt20]}>
-                            <Button
-                                title={'Create Match'}
-                                color={'rgb(245, 148, 92)'} titleStyle={{ color: 'black' }}
-                                onPress={() => { insertNewMatch() }}
-                                disabled={loading}
-                            />
-                        </View>
-                    </ScrollView>
-                </GestureHandlerRootView>
+                    <View style={[styles.verticallySpaced, styles.mt20]}>
+                        <Button
+                            title={'Create Match'}
+                            color={'rgb(245, 148, 92)'} titleStyle={{ color: 'black' }}
+                            onPress={() => { insertNewMatch() }}
+                            disabled={loading}
+                        />
+                    </View>
+                </ScrollView>
+            </GestureHandlerRootView>
         )
     }
     else {

@@ -1,4 +1,4 @@
-import { RefreshControl, ScrollView, View, Text, StyleSheet, FlatList, Linking, Platform, Pressable } from 'react-native'
+import { RefreshControl, ScrollView, View, Text, StyleSheet, FlatList, Pressable } from 'react-native'
 import React, { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../../lib/supabase'
 import { useMMKV } from 'react-native-mmkv'
@@ -33,7 +33,7 @@ export default function MatchScreen() {
   // console.log(gender)
 
   useEffect(() => {
-    getUpcomingMatches()
+
     if (isFocused) {
       onRefresh()
     }
@@ -245,7 +245,7 @@ export default function MatchScreen() {
                 }
                 setShowModal(false)
                 onRefresh()
-                navigation.navigate('Upcoming')
+                navigation.navigate('Calendar')
               }}
             />
           </View>
