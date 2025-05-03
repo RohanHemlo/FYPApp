@@ -10,8 +10,8 @@ import Modal from 'react-native-modal'
 import { Button } from '@rneui/themed'
 import { Picker } from '@react-native-picker/picker'
 
-// TODO: CRON FUNCTION THAT CHECKS IF THE MATCH HAS ENOUGH PLAYERS TO BE PLAYED 24 HOURS BEFORE THE GAME, AND IF NOT IT CANCELS (SEE HOW YOU CAN SEND A NOTIFICATION TOO)
 // TODO: MAKE HISTORY, HOME SCREEN SHOWING ALL STATS AND LEADERBOARD
+// TODO: CRON FUNCTION THAT CHECKS IF THE MATCH HAS ENOUGH PLAYERS TO BE PLAYED 24 HOURS BEFORE THE GAME, AND IF NOT IT CANCELS (SEE HOW YOU CAN SEND A NOTIFICATION TOO)
 
 export default function Vote() {
   const [refreshing, setRefreshing] = useState(false)
