@@ -8,9 +8,7 @@ import { Button } from '@rneui/themed'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Modal from 'react-native-modal'
 
-// TODO: IMPLEMENT LEADERBOARD
-
-const Profile = () => {
+export default function Profile() {
   const [refreshing, setRefreshing] = useState(false)
 
   const [userRatings, setUserRatings] = useState<any>()
@@ -118,8 +116,6 @@ const Profile = () => {
 
   )
 }
-
-export default Profile
 
 const styles = StyleSheet.create({
   container: {

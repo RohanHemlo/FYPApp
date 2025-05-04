@@ -139,27 +139,27 @@ export default function UpComingMatch() {
 
   function DisplayMatches({ match, onJoinPress }: { match: any, onJoinPress: (match: any) => void }) {
     const date = new Date(match.MatchTime)
-    const gender = match.Gender === "Male" ? "Men's Only" : "Women's Only"
     const level = getLevel(match.Level)
     const info = match.Information || "No additional info!"
     var able = false
 
     return (
-      <View style={styles.whole_view}>
-        <View style={styles.view_date}>
+      <View style={styles.wholeView}>
+        <View style={styles.viewDate}>
           <Text style={styles.text}>{date.toDateString()} {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
         </View>
         <Pressable onPress={() => checkMaps(match.Address)}>
-          <Text style={{ textDecorationLine: 'underline' }}>{match.Address}</Text>
+          <Text style={styles.addressText}>{match.Address}</Text>
         </Pressable>
-        <Text>Level: {level}</Text>
-        <Text>{info}</Text>
+        <Text style={styles.levelText}>Level: {level}</Text>
+        <Text style={styles.infoText}>{info}</Text>
 
         <Button title={"Info"}
           color={'rgb(245, 148, 92)'}
           titleStyle={{ color: 'black' }}
           onPress={() => onJoinPress(match)}
           disabled={able}
+          style={styles.button}
         />
       </View>
     )
@@ -203,7 +203,7 @@ export default function UpComingMatch() {
                   <Pressable onPress={() => checkMaps(selectedMatch.Address)}>
                     <Text style={[styles.modalText, { textDecorationLine: 'underline' }]}>Location: {selectedMatch.Address}</Text>
                   </Pressable>
-                  <Text style={styles.modalText}>Level: {getLevel(selectedMatch.Level)} <Text style={styles.modalWarning}>{checkLevel(selectedMatch.Level)}</Text></Text>
+                  <Text style={styles.modalText}>Level: {getLevel(selectedMatch.Level)} </Text>
                   <Text style={[styles.modalText, { marginTop: 10 }]}>Positions:</Text>
                   {mapSelectedPositions()}
                 </>
@@ -226,23 +226,23 @@ export default function UpComingMatch() {
 }
 
 const styles = StyleSheet.create({
-  whole_view: {
-    padding: '2%',
-    margin: '2%',
-  },
-  view_date: {
-    backgroundColor: 'rgb(246, 177, 138)',
-    padding: '2%',
-  },
-  text: {
-    fontSize: 18,
-  },
+  // whole_view: {
+  //   padding: '2%',
+  //   margin: '2%',
+  // },
+  // view_date: {
+  //   backgroundColor: 'rgb(246, 177, 138)',
+  //   padding: '2%',
+  // },
+  // text: {
+  //   fontSize: 18,
+  // },
   modal: {
     justifyContent: 'flex-end',
     margin: 0,
   },
   modalContent: {
-    height: '50%',
+    height: '70%',
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -252,13 +252,50 @@ const styles = StyleSheet.create({
     fontSize: 18,
     // marginBottom: 20,
   },
-  modalWarning: {
-    fontSize: 14,
-    color: 'red',
-  },
   modalHeaderText: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-  }
+  },
+  wholeView: {
+    backgroundColor: '#fff',
+    padding: 16,
+    marginVertical: 10,
+    marginHorizontal: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2, // for Android shadow
+  },
+  viewDate: {
+    marginBottom: 8,
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+  },
+  addressText: {
+    fontSize: 15,
+    color: '#0066cc',
+    textDecorationLine: 'underline',
+    marginBottom: 6,
+  },
+  levelText: {
+    fontSize: 15,
+    color: '#666',
+    marginBottom: 4,
+  },
+  infoText: {
+    fontSize: 14,
+    color: '#444',
+    marginBottom: 12,
+  },
+  button: {
+    backgroundColor: 'rgb(245, 148, 92)',
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
 })

@@ -166,22 +166,22 @@ export default function MatchScreen() {
     }
 
     return (
-      <View style={styles.whole_view}>
-        <View style={styles.view_date}>
+      <View style={styles.wholeView}>
+        <View style={styles.viewDate}>
           <Text style={styles.text}>{date.toDateString()} {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
         </View>
         <Text>{gender}</Text>
         <Text>Player Count: {match.PlayerCount + "/" + match.TotalPlayers * 2}</Text>
         <Pressable onPress={() => checkMaps(match.Address)}>
-          <Text style={{ textDecorationLine: 'underline' }}>{match.Address}</Text>
+          <Text style={styles.addressText}>{match.Address}</Text>
         </Pressable>
-        <Text>Level: {level}</Text>
-        <Text>{info}</Text>
+        <Text style={styles.levelText}>Level: {level}</Text>
+        <Text style={styles.infoText}>{info}</Text>
 
         <Button title={able ? 'Already Joined!' : "Join!"}
           color={able ? 'grey' : 'rgb(245, 148, 92)'}
           titleStyle={{ color: 'black' }}
-          onPress={() => onJoinPress(match)}
+          onPress={() => [console.log('pressed'), onJoinPress(match)]}
           disabled={able}
         />
       </View>
@@ -221,7 +221,7 @@ export default function MatchScreen() {
                 <Text style={styles.modalText}>Date: {new Date(selectedMatch.MatchTime).toDateString()} {new Date(selectedMatch.MatchTime).toLocaleString([], { hour: '2-digit', minute: '2-digit' })}</Text>
                 <Text style={styles.modalText}>{selectedMatch.Gender === 'Male' ? "Men's Only" : "Women's Only"}</Text>
                 <Pressable onPress={() => checkMaps(selectedMatch.Address)}>
-                  <Text style={[styles.modalText, { textDecorationLine: 'underline' }]}>Location: {selectedMatch.Address}</Text>
+                  <Text style={styles.modalAddressText}>Location: {selectedMatch.Address}</Text>
                 </Pressable>
                 <Text style={styles.modalText}>Level: {getLevel(selectedMatch.Level)} <Text style={styles.modalWarning}>{checkLevel(selectedMatch.Level)}</Text></Text>
                 <Text style={[styles.modalText, { marginTop: 10 }]}>Pick your position:</Text>
@@ -256,39 +256,75 @@ export default function MatchScreen() {
 }
 
 const styles = StyleSheet.create({
-  whole_view: {
-    padding: '2%',
-    margin: '2%',
-  },
-  view_date: {
-    backgroundColor: 'rgb(246, 177, 138)',
-    padding: '2%',
-  },
-  text: {
-    fontSize: 18,
-  },
   modal: {
-    justifyContent: 'flex-end',
-    margin: 0,
+      justifyContent: 'flex-end',
+      margin: 0,
   },
   modalContent: {
-    height: '50%',
-    backgroundColor: 'white',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
+      height: '50%',
+      backgroundColor: 'white',
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      padding: 20,
   },
   modalText: {
-    fontSize: 18,
-    // marginBottom: 20,
+      fontSize: 18,
+      // marginBottom: 20,
+  },
+  modalAddressText: {
+      fontSize: 18,
+      color: '#0066cc',
+      textDecorationLine: 'underline',
+      marginBottom: 6,
   },
   modalWarning: {
-    fontSize: 14,
-    color: 'red',
+      fontSize: 14,
+      color: 'red',
   },
   modalHeaderText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  }
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginBottom: 10,
+  },
+  wholeView: {
+      backgroundColor: '#fff',
+      padding: 16,
+      marginVertical: 10,
+      marginHorizontal: 16,
+      borderRadius: 12,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2, // for Android shadow
+  },
+  viewDate: {
+      marginBottom: 8,
+  },
+  text: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: '#333',
+  },
+  addressText: {
+      fontSize: 15,
+      color: '#0066cc',
+      textDecorationLine: 'underline',
+      marginBottom: 6,
+  },
+  levelText: {
+      fontSize: 15,
+      color: '#666',
+      marginBottom: 4,
+  },
+  infoText: {
+      fontSize: 14,
+      color: '#444',
+      marginBottom: 12,
+  },
+  button: {
+      backgroundColor: 'rgb(245, 148, 92)',
+      paddingVertical: 10,
+      borderRadius: 8,
+  },
 })

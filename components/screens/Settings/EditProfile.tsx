@@ -183,6 +183,14 @@ export default function EditProfile({ session }: { session: Session }) {
         />
       </View>
 
+      <View style={[styles.verticallySpaced, styles.mt20]}>
+        <Button title="Sign Out" color={'rgb(245, 148, 92)'} titleStyle={{ color: 'black' }}
+          containerStyle={{
+            marginVertical: 10,
+          }}
+          onPress={() => supabase.auth.signOut()} />
+      </View>
+
     </ScrollView>
   )
 }

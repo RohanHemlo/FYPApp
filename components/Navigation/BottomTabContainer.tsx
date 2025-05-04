@@ -5,6 +5,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import HomeTopBarContainer from './HomeTopBarContainer';
 import SettingsNavigation from './SettingsNavigation'
+// import SettingsMain from '../screens/Settings/SettingsMain';
 import MatchTopBarContainer from './MatchTopBarContainer'
 import CalendarTopBarContainer from './CalendarTopBarContainer';
 import Vote from '../screens/Vote';

@@ -20,7 +20,7 @@ export default function SettingsNavigation() {
 
   return (
       <Stack.Navigator>
-        <Stack.Screen name="Main Settings" component={SettingsMain} options={{ headerShown: false}}/>
+        {/* <Stack.Screen name="Main Settings" component={SettingsMain} options={{ headerShown: false}}/> */}
         <Stack.Screen name="Edit Profile">
            {(props) => <EditProfile {...props} session={session} />}
          </Stack.Screen>
