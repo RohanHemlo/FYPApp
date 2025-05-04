@@ -9,6 +9,8 @@ import { useIsFocused } from '@react-navigation/native'
 import Modal from 'react-native-modal'
 import { checkMaps } from '../../CustomProps/checkMaps'
 
+// TODO: SORT BY RECENTLY OR EARLIEST PLAYED
+
 export default function UpComingMatch() {
   const [playedMatches, setPlayedMatches] = useState<any[]>([])
   const [selectedMatch, setSelectedMatch] = useState<any>(null)

@@ -14,7 +14,7 @@ export default function TabContainer() {
 
     return (
         <Tab.Navigator
-            initialRouteName={"Vote"}
+            initialRouteName={"Home"}
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName = 'home';

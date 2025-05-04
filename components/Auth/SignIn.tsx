@@ -11,13 +11,6 @@ export default function SignIn() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // const storage = useMMKV()
-  // console.log(storage.getString('user.name'))
-
-  //TODO: try make it so that the email and password carry over if needed from sign in page to sign up
-  // https://stackoverflow.com/questions/68667766/react-native-typescript-string-is-not-assignable-to-parameter-of-type-never
-  // ^^ FOR HELP ^^
-
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
   async function signInWithEmail() {

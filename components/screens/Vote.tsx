@@ -6,11 +6,12 @@ import { useIsFocused } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { checkMaps } from '../CustomProps/checkMaps'
 import Modal from 'react-native-modal'
-
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
 import { Button } from '@rneui/themed'
 import { Picker } from '@react-native-picker/picker'
 
-// TODO: MAKE HISTORY, HOME SCREEN SHOWING ALL STATS AND LEADERBOARD
+// TODO:  AND LEADERBOARD
 // TODO: CRON FUNCTION THAT CHECKS IF THE MATCH HAS ENOUGH PLAYERS TO BE PLAYED 24 HOURS BEFORE THE GAME, AND IF NOT IT CANCELS (SEE HOW YOU CAN SEND A NOTIFICATION TOO)
 
 export default function Vote() {
@@ -31,6 +32,8 @@ export default function Vote() {
 
   const storage = useMMKV()
   const isFocused = useIsFocused()
+  const navigation = useNavigation<NativeStackNavigationProp<any>>()
+
 
   useEffect(() => {
 
@@ -143,7 +146,7 @@ export default function Vote() {
     if (error) {
       console.error('Error updating ratings:', error);
     } else {
-      // console.log('Ratings updated:', data);
+      navigation.navigate('Home', {screen: "Stats"})
     }
   }
 
