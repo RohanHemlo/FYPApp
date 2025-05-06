@@ -18,6 +18,11 @@ export default function SignUp() {
     const [FavouriteClub, setFavouriteClub] = useState('')
     const [Level, setLevel] = useState<number>(1)
 
+    const userAgreementAlert = () => Alert.alert('Disclaimer',
+        'By signing up to this, you are agreeing that any injuries or harm done to you from playing a match is not liable to the app or creator of the app.', [
+            { text: 'Yes', onPress: () => [signUpWithEmail()] },
+             { text: 'Cancel', }])
+
     async function signUpWithEmail() {
         setLoading(true)
 
@@ -168,7 +173,7 @@ export default function SignUp() {
                     title={loading ? 'Loading ...' : 'Sign Up!'}
                     color={'rgb(245, 148, 92)'}
                     titleStyle={{ color: 'black' }}
-                    onPress={() => { signUpWithEmail() }}
+                    onPress={() => { userAgreementAlert() }}
                     disabled={loading}
                 />
             </View>

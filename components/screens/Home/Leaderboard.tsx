@@ -56,6 +56,7 @@ export default function Leaderboard() {
       console.log(error)
     }
     if (data) {
+      console.log("in leaderboard: ", data)
       setPlayerRatings(data)
     }
   }
@@ -77,10 +78,10 @@ export default function Leaderboard() {
   return (
     <View>
       <SafeAreaView>
-        {playerRatings && overallRating ? (
+        {playerRatings  ? (
           <>
             <View style={[styles.viewTitle, styles.ratingContainer]}>
-              <Text style={styles.ratingTextTitle}>{overallRating.toFixed(0)}</Text>
+              <Text style={styles.ratingTextTitle}>{overallRating?.toFixed(0)}</Text>
               <Ionicons name="star" style={styles.iconTitle} />
               <Text style={styles.ratingTextTitle}> Leaderboard</Text>
             </View>
@@ -92,6 +93,7 @@ export default function Leaderboard() {
             />
           </>
         ) : (
+          console.log("in if statement: ", playerRatings, overallRating), 
           <Text>Loading...</Text>
         )}
       </SafeAreaView>
