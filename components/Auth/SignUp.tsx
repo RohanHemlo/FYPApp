@@ -13,7 +13,6 @@ export default function SignUp() {
     const [FirstName, setFirstName] = useState('')
     const [SecondName, setSecondName] = useState('')
     const [Gender, setGender] = useState<string>("Male")
-    const [Private, setPrivate] = useState<boolean>(false)
     const [FavouritePosition, setFavouritePosition] = useState<string>("GK")
     const [FavouriteClub, setFavouriteClub] = useState('')
     const [Level, setLevel] = useState<number>(1)
@@ -68,7 +67,6 @@ export default function SignUp() {
                     FirstName,
                     SecondName,
                     Gender,
-                    Private,
                     FavouritePosition,
                     FavouriteClub,
                     Level,
@@ -132,17 +130,6 @@ export default function SignUp() {
                     <Picker.Item label="Male" value="Male" />
                     <Picker.Item label="Female" value="Female" />
                 </Picker>
-            </View>
-            <View style={styles.verticallySpaced}>
-                <Text>
-                    {Private ? "Profile is Private" : "Profile is Public"}
-                </Text>
-                <Switch
-                    value={Private}
-                    onValueChange={setPrivate}
-                    trackColor={{ false: "#ccc", true: "#007bff" }}
-                    thumbColor={Private ? "#fff" : "#f4f3f4"}
-                />
             </View>
             <View style={styles.verticallySpaced}>
                 <Text>Favourite Position?</Text>

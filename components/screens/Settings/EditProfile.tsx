@@ -13,7 +13,6 @@ export default function EditProfile({ session }: { session: Session }) {
   const [FirstName, setFirstName] = useState('')
   const [SecondName, setSecondName] = useState('')
   const [Gender, setGender] = useState<string>("Male")
-  const [Private, setPrivate] = useState<boolean>(false)
   const [FavouritePosition, setFavouritePosition] = useState<string>("GK")
   const [FavouriteClub, setFavouriteClub] = useState('')
   const [Level, setLevel] = useState<number>(1)
@@ -49,7 +48,6 @@ export default function EditProfile({ session }: { session: Session }) {
         setGender(data.Gender)
         setFavouriteClub(data.FavouriteClub)
         setFavouritePosition(data.FavouritePosition)
-        setPrivate(data.Private)
         setLevel(data.Level)
       }
     } catch (error) {
@@ -65,7 +63,6 @@ export default function EditProfile({ session }: { session: Session }) {
     FirstName,
     SecondName,
     Gender,
-    Private,
     FavouritePosition,
     FavouriteClub,
     Level,
@@ -73,7 +70,6 @@ export default function EditProfile({ session }: { session: Session }) {
     FirstName: string
     SecondName: string
     Gender: string
-    Private: boolean
     FavouritePosition: string
     FavouriteClub: string
     Level: number
@@ -93,7 +89,6 @@ export default function EditProfile({ session }: { session: Session }) {
           FirstName,
           SecondName,
           // Gender,
-          Private,
           FavouritePosition,
           FavouriteClub,
           Level,
@@ -109,7 +104,7 @@ export default function EditProfile({ session }: { session: Session }) {
           throw error
         }
 
-        // navigation.navigate("Profile")
+        navigation.navigate("Home")
 
       }
     } catch (error) {
@@ -140,17 +135,6 @@ export default function EditProfile({ session }: { session: Session }) {
         </Picker>
       </View> */}
       <View style={styles.verticallySpaced}>
-        <Text>
-          {Private ? "Profile is Private" : "Profile is Public"}
-        </Text>
-        <Switch
-          value={Private}
-          onValueChange={setPrivate}
-          trackColor={{ false: "#ccc", true: "#007bff" }}
-          thumbColor={Private ? "#fff" : "#f4f3f4"}
-        />
-      </View>
-      <View style={styles.verticallySpaced}>
         <Text>Favourite Position?</Text>
         <Picker prompt="Favourite Position?" selectedValue={FavouritePosition} onValueChange={itemValue => setFavouritePosition(itemValue)}>
           <Picker.Item label="GK (Goalkeeper)" value="GK" />
@@ -178,7 +162,7 @@ export default function EditProfile({ session }: { session: Session }) {
         <Button
           title={loading ? 'Loading ...' : 'Update'}
           color={'rgb(245, 148, 92)'} titleStyle={{ color: 'black' }}
-          onPress={() => { updateProfile({ FirstName, SecondName, Gender, Private, FavouritePosition, FavouriteClub, Level }), navigation.navigate("Main Settings") }}
+          onPress={() => { updateProfile({ FirstName, SecondName, Gender, FavouritePosition, FavouriteClub, Level }) }}
           disabled={loading}
         />
       </View>

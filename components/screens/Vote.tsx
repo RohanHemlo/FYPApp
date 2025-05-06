@@ -185,6 +185,7 @@ export default function Vote() {
     const date = new Date(match.MatchTime)
     const level = getLevel(match.Level)
 
+    //TODO: get rid of private
 
     return (
       <View style={styles.wholeView}>
