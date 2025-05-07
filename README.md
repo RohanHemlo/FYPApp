@@ -1,14 +1,10 @@
 # Prerequisites
 
-Android Studio is needed to run this: https://developer.android.com/studio?gad_source=1&gad_campaignid=22447855674&gbraid=0AAAAAC-IOZmB7yijNEZN31oquGkSDw6gq&gclid=Cj0KCQjw5ubABhDIARIsAHMighaGsUQN7V5JR4ZRhCVB0sdXazFlKZGNPmITFRSekDksT4YXSmoKK2saAhJ5EALw_wcB&gclsrc=aw.ds
+[Android Studio](https://developer.android.com/studio?gad_source=1&gad_campaignid=22447855674&gbraid=0AAAAAC-IOZmB7yijNEZN31oquGkSDw6gq&gclid=Cj0KCQjw5ubABhDIARIsAHMighaGsUQN7V5JR4ZRhCVB0sdXazFlKZGNPmITFRSekDksT4YXSmoKK2saAhJ5EALw_wcB&gclsrc=aw.ds) is needed to run this: 
 
-Node.js is also required to run this:
+[Node.js](https://nodejs.org/en/) is also required to run this:
 
-https://nodejs.org/en/
-
-Java is also required to run this, make sure you have a JDK version 17 or higher and under 25.
-
-https://www.oracle.com/java/technologies/downloads/
+[Java](https://www.oracle.com/java/technologies/downloads/) is also required to run this, make sure you have a JDK version 17 or higher and under 25.
 
 ## How to Run
 
